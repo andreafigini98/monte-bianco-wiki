@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mappa Gite — Monte Bianco</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  #map { width: 100%; height: 100vh; }
+  .legend {
+    position: absolute; z-index: 1000; bottom: 24px; left: 12px;
+    background: rgba(255,255,255,0.95); padding: 10px 14px; border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.3); font-size: 13px; line-height: 1.6;
+  }
+  .legend span.dot { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  .popup-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .popup-title a { color: #1d4ed8; text-decoration: none; }
+  .popup-title a:hover { text-decoration: underline; }
+  @media (prefers-color-scheme: dark) {
+    .popup-title a { color: #7aa2ff; }
+  }
+  .popup-badge {
+    display:inline-block; padding:1px 7px; border-radius:10px; color:#fff; font-size:11px; margin-bottom:6px;
+  }
+  .popup-table { font-size: 12.5px; }
+  .popup-table td:first-child { color:#666; padding-right:8px; white-space:nowrap; }
+  .popup-desc { font-size:12.5px; margin-top:6px; color:#333; max-width:230px; }
+  @media (prefers-color-scheme: dark) {
+    .legend { background: rgba(30,30,30,0.92); color: #eee; }
+    .popup-desc { color:#ccc; }
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="legend">
+  <div><span class="dot" style="background:#1d9bf0"></span>Campeggio (base)</div>
+  <div><span class="dot" style="background:#2f9e44"></span>Facile</div>
+  <div><span class="dot" style="background:#f08c00"></span>Media</div>
+  <div><span class="dot" style="background:#e03131"></span>Impegnativa</div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  const CAMP = [45.7168, 7.2619];
+  const POINTS = [{"name": "Cascate di Lillaz", "url": "https://andreafigini98.github.io/monte-bianco-wiki/Gite/Cascate-di-Lillaz", "lat": 45.5941, "lon": 7.3901, "difficolta": "facile (T)", "dislivello": "~120 m", "lunghezza": "~2 km (anello)", "tempo": "~1 ora", "da_base": "25,6 km — ~30 min", "descrizione": "Anello breve e facile a Lillaz (Cogne) fino alle spettacolari cascate a tre salti sul torrente Urtier: perfetto per famiglie o giorni di meteo incerto.", "color": "#2f9e44", "diff_key": "facile"}, {"name": "Colle Superiore delle Cime Bianche e Lago Goillet", "url": "https://andreafigini98.github.io/monte-bianco-wiki/Gite/Colle-Superiore-delle-Cime-Bianche-e-Lago-Goillet", "lat": 45.9356, "lon": 7.6304, "difficolta": "impegnativa (E)", "dislivello": "~980 m", "lunghezza": "~12 km (a/r)", "tempo": "~6 ore (3h10 salita)", "da_base": "62,7 km — ~1 ora", "descrizione": "Da Breuil-Cervinia al Colle Superiore delle Cime Bianche passando per il Lago Goillet, con il Cervino sempre alle spalle: una delle salite più panoramiche sul 'Toblerone' delle Alpi.", "color": "#e03131", "diff_key": "impegnativa"}, {"name": "Rifugio Elisabetta e Lago Combal", "url": "https://andreafigini98.github.io/monte-bianco-wiki/Gite/Rifugio-Elisabetta-e-Lago-Combal", "lat": 45.7856, "lon": 6.9003, "difficolta": "media (T/E)", "dislivello": "~550 m", "lunghezza": "~12 km (a/r)", "tempo": "~4 ore", "da_base": "37,9 km — ~40 min", "descrizione": "Da La Visaille, in Val Veny, al Rifugio Elisabetta passando per il Lago Combal: vista sui ghiacciai del versante sud del Monte Bianco, tappa del Tour du Mont Blanc.", "color": "#f08c00", "diff_key": "media"}, {"name": "Rifugio Vittorio Sella e Valnontey", "url": "https://andreafigini98.github.io/monte-bianco-wiki/Gite/Rifugio-Vittorio-Sella-e-Valnontey", "lat": 45.5867, "lon": 7.3412, "difficolta": "media (E)", "dislivello": "~920 m", "lunghezza": "~9 km (a/r)", "tempo": "~4h30 (2h30 salita, 2h discesa)", "da_base": "24,8 km — ~30 min", "descrizione": "La gita più classica del Parco Nazionale Gran Paradiso: da Valnontey al Rifugio Vittorio Sella, ai piedi dei ghiacciai della Grivola e della Tribolazione, con ottime probabilità di avvistare stambecchi.", "color": "#f08c00", "diff_key": "media"}, {"name": "Rifugio Walter Bonatti da Lavachey", "url": "https://andreafigini98.github.io/monte-bianco-wiki/Gite/Rifugio-Walter-Bonatti-da-Lavachey", "lat": 45.8499, "lon": 7.0216, "difficolta": "media (E)", "dislivello": "~450 m", "lunghezza": "~10 km (anello)", "tempo": "~4 ore", "da_base": "39,8 km — ~45 min", "descrizione": "La 'balconata' della Val Ferret, tappa del Tour du Mont Blanc: da Lavachey al Rifugio Walter Bonatti, con vista continua sul massiccio del Monte Bianco e le Grandes Jorasses.", "color": "#f08c00", "diff_key": "media"}, {"name": "Rifugio e Lago Gabiet", "url": "https://andreafigini98.github.io/monte-bianco-wiki/Gite/Rifugio-e-Lago-Gabiet", "lat": 45.8569, "lon": 7.8155, "difficolta": "media (E)", "dislivello": "~730 m", "lunghezza": "~10 km (a/r)", "tempo": "~4-5 ore (2h20 salita)", "da_base": "96,7 km — ~1h30", "descrizione": "Da Gressoney-La-Trinité al Lago e Rifugio Gabiet, ai piedi del Monte Rosa, nella valle che ospita il comprensorio sciistico del Monterosa Ski.", "color": "#f08c00", "diff_key": "media"}];
+
+  const map = L.map('map').setView(CAMP, 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  L.circleMarker(CAMP, {
+    radius: 9, color: '#1d9bf0', fillColor: '#1d9bf0', fillOpacity: 0.9, weight: 2
+  }).addTo(map).bindPopup('<div class="popup-title">⛺ Campeggio — base</div>');
+
+  const bounds = [CAMP];
+  POINTS.forEach(p => {
+    const marker = L.circleMarker([p.lat, p.lon], {
+      radius: 7, color: p.color, fillColor: p.color, fillOpacity: 0.85, weight: 1.5
+    }).addTo(map);
+    bounds.push([p.lat, p.lon]);
+    const popup = `
+      <div class="popup-title"><a href="${p.url}" target="_top" rel="noopener">${p.name} →</a></div>
+      <span class="popup-badge" style="background:${p.color}">${p.difficolta}</span>
+      <table class="popup-table">
+        <tr><td>Dislivello</td><td>${p.dislivello}</td></tr>
+        <tr><td>Lunghezza</td><td>${p.lunghezza}</td></tr>
+        <tr><td>Tempo</td><td>${p.tempo}</td></tr>
+        <tr><td>Dal campeggio</td><td>${p.da_base}</td></tr>
+      </table>
+      <div class="popup-desc">${p.descrizione}</div>
+    `;
+    marker.bindPopup(popup, { maxWidth: 260 });
+  });
+
+  map.fitBounds(bounds, { padding: [30, 30] });
+</script>
+</body>
+</html>

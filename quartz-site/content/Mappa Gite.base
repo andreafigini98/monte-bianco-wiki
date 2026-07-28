@@ -1,0 +1,20 @@
+filters:
+  or:
+    - file.inFolder("Gite")
+    - file.hasTag("campeggio")
+formulas:
+  map_color: if(color, color, if(file.hasTag("impegnativa"), "#e03131", if(file.hasTag("media"), "#f08c00", if(file.hasTag("facile"), "#2f9e44", "#888888"))))
+views:
+  - type: map
+    name: Mappa Monte Bianco
+    coordinates: note.coordinate
+    markerColor: formula.map_color
+  - type: table
+    name: Tutte le gite
+    order:
+      - file.name
+      - difficolta
+      - dislivello
+      - lunghezza
+      - tempo
+      - da_base
