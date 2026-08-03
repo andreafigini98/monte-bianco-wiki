@@ -1,3 +1,7 @@
+import { getAllHikes } from '@/lib/hikes'
+import HomeClient from '@/components/HomeClient'
+
 export default function Home() {
-  return <main className="p-8"><h1 className="text-3xl font-bold">Monte Bianco Wiki</h1></main>
+  const hikes = getAllHikes()
+  return <HomeClient hikes={hikes} />
 }
