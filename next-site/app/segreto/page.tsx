@@ -17,6 +17,11 @@ export default async function SecretoPage() {
 
   if (token !== expected) return <SecretLogin />
 
-  const todos = await getTodos()
+  let todos: Awaited<ReturnType<typeof getTodos>> = []
+  try {
+    todos = await getTodos()
+  } catch {
+    // KV non configurato — mostra lista vuota
+  }
   return <TodoList todos={todos} />
 }

@@ -5,7 +5,11 @@ export type Todo = { id: string; text: string; done: boolean }
 const KEY = 'wiki-todos'
 
 export async function getTodos(): Promise<Todo[]> {
-  return (await kv.get<Todo[]>(KEY)) ?? []
+  try {
+    return (await kv.get<Todo[]>(KEY)) ?? []
+  } catch {
+    return []
+  }
 }
 
 export async function saveTodos(todos: Todo[]): Promise<void> {
