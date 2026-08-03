@@ -132,7 +132,7 @@ export default function HomeClient({ hikes }: { hikes: Hike[] }) {
                 exit="exit"
                 layout
               >
-                <HikeCard hike={h} />
+                <HikeCard hike={h} index={i} />
               </motion.div>
             ))}
           </AnimatePresence>

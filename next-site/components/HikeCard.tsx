@@ -9,10 +9,14 @@ const DIFF_COLOR: Record<DifficultyLevel, string> = {
   'molto impegnativa': 'text-red-600',
 }
 
-export default function HikeCard({ hike }: { hike: Hike }) {
+export default function HikeCard({ hike, index }: { hike: Hike; index?: number }) {
+  const num = index !== undefined ? String(index + 1).padStart(2, '0') : null
+
   return (
     <Link href={`/gite/${hike.slug}`} className="group block">
-      <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-4">
+
+      {/* Image */}
+      <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-5">
         {hike.imageUrl && (
           <Image
             src={hike.imageUrl}
@@ -22,25 +26,48 @@ export default function HikeCard({ hike }: { hike: Hike }) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         )}
+
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/25 transition-colors duration-500" />
+
+        {/* Arrow button — slides up on hover */}
+        <div className="absolute bottom-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out shadow-sm">
+          <span className="text-stone-900 text-xs font-medium leading-none">→</span>
+        </div>
+
+        {/* Index number — top left */}
+        {num && (
+          <div className="absolute top-3 left-3 text-[10px] font-medium tracking-widest text-white/70 tabular-nums leading-none">
+            {num}
+          </div>
+        )}
       </div>
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
+
+      {/* Text */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
           <span className="text-xs uppercase tracking-widest text-stone-400">{hike.zona}</span>
-          <span className={`text-xs uppercase tracking-wide font-medium ${DIFF_COLOR[hike.difficultyLevel]}`}>
+          <span className={`text-xs uppercase tracking-wide font-semibold ${DIFF_COLOR[hike.difficultyLevel]}`}>
             {hike.difficultyLevel}
           </span>
         </div>
-        <h2 className="font-bold text-lg leading-tight text-stone-900 group-hover:text-stone-500 transition-colors">
+
+        <h2 className="font-serif text-xl font-bold leading-tight text-stone-900 mb-2 group-hover:text-stone-500 transition-colors duration-300">
           {hike.title}
         </h2>
-        <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{hike.descrizione}</p>
-        <div className="flex flex-wrap gap-x-4 text-xs text-stone-400 pt-1">
+
+        <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed mb-4">{hike.descrizione}</p>
+
+        {/* Stats — clean, no emoji */}
+        <div className="flex items-center gap-3 text-xs text-stone-400">
           <span>{hike.dislivello} ↑</span>
-          <span>{hike.lunghezza}</span>
+          <span className="text-stone-200">·</span>
           <span>{hike.tempo}</span>
-          <span>{hike.da_base} 🚗</span>
+          <span className="text-stone-200">·</span>
+          <span>{hike.da_base} in auto</span>
         </div>
       </div>
+
     </Link>
   )
 }
