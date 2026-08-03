@@ -28,11 +28,10 @@ next-site/
 │       └── page.tsx         Pagina mappa a schermo intero (calc(100vh - 56px)) con legenda
 ├── components/
 │   ├── Nav.tsx              Navbar con wordmark serif, animazione entrata, underline attivo layoutId
-│   ├── HomeClient.tsx       Homepage client: filtri, griglia card, animazioni framer-motion
-│   ├── HikeCard.tsx         Card editoriale, aspect-[4/3] immagine, scala al hover
-│   ├── FilterBar.tsx        Pill buttons con sfondo animato (layoutId spring)
-│   ├── HikePageContent.tsx  Pagina gita client: animazioni fadeUp per ogni sezione
-│   ├── Map.tsx              Leaflet map (NO SSR): marker colorati, polyline OSRM, popup
+│   ├── HomeClient.tsx       Homepage client: 4 sezioni per difficoltà, animazioni whileInView
+│   ├── HikeCard.tsx         Card editoriale, aspect-[4/3] rounded-lg, overlay hover, serif title
+│   ├── HikePageContent.tsx  Pagina gita client: hero full-width, stats card, linea colorata
+│   ├── Map.tsx              Leaflet map (NO SSR): marker colorati, polyline OSRM, FitBounds, popup
 │   └── MapWrapper.tsx       'use client' + dynamic import con ssr:false (obbligatorio in Next.js 15)
 └── lib/
     ├── hikes.ts             Data layer: tipi, getAllHikes(), getHikeBySlug(), toSlug()
@@ -43,60 +42,82 @@ next-site/
 
 - **Font**: Playfair Display (serif, titoli) + Geist (sans, corpo) — caricati da `next/font/google`
 - **Palette**: stone (900/500/400/200/100/50) su sfondo bianco
+- **Colori difficoltà**: `#10b981` emerald (facile) · `#eab308` amber (media) · `#f97316` orange (impegnativa) · `#ef4444` red (molto impegnativa)
 - **Tailwind**: v3 (NON v4 — incompatibile con Node 18). Config: `tailwind.config.ts` con
   `require('@tailwindcss/typography')` e font family estesi.
-- **Animazioni**: framer-motion — blur+slide dal basso per hero e card, `layoutId` per filtri e nav,
-  `AnimatePresence mode="popLayout"` per le card che entrano/escono dai filtri.
-- **Card**: nessun bordo, nessuna ombra — solo tipografia e immagine. Scala al hover (duration-700).
+- **Animazioni**: framer-motion — blur+slide dal basso per hero e card, `whileInView` per le sezioni
+  della homepage e le card nelle sezioni, `layoutId` per nav underline.
 
-## Data layer (`lib/hikes.ts`)
+## Homepage (`components/HomeClient.tsx`)
 
-```ts
-const GITE_DIR = path.join(process.cwd(), '..', 'content-monte-bianco', 'Gite')
-```
+La homepage è divisa in due parti:
 
-Legge i file markdown tramite `gray-matter` (frontmatter) + corpo grezzo. Cache module-level (`let _cache`)
-corretta per SSG; da rimuovere se si passa a ISR o route dinamiche.
+**1. Hero** — identico a prima: titolo serif grande, numero decorativo in background, linea animata.
 
-**Tipi principali:**
-```ts
-type DifficultyLevel = 'facile' | 'media' | 'impegnativa' | 'molto impegnativa'
-type Zona = 'Gran Paradiso' | 'Monte Bianco' | 'Cervino' | 'Monte Rosa' | 'Valpelline' | 'Altro'
-```
+**2. Quattro sezioni per difficoltà** — `DIFFICULTIES` array definisce ordine e colore. Per ogni sezione:
+- Numero sezione (`01`…`04`) in alto a sinistra
+- Titolo difficoltà in serif grande nel colore della difficoltà, con blur+slide `whileInView`
+- Linea colorata animata `scaleX` sotto il titolo
+- Contatore gite
+- Griglia card `1→2→3 colonne` con stagger `whileInView`
 
-**Guard coordinate**: `hike.coordinate && !isNaN(lat) && !isNaN(lng)` — `Number('')` restituisce 0
-(non NaN), quindi il check sulla stringa vuota è obbligatorio prima di `isNaN`.
+Non esiste più un filter bar — la navigazione per difficoltà è strutturale, non a filtro.
+
+## Card (`components/HikeCard.tsx`)
+
+- `aspect-[4/3]`, `rounded-lg`, overlay scuro al hover
+- Titolo serif (`font-serif`)
+- Stats pulite: `dislivello ↑ · tempo · da_base in auto` — niente emoji
+- Nessun numero indice, nessuna freccia
+
+## Pagine gita (`components/HikePageContent.tsx`)
+
+Struttura in due blocchi separati:
+
+**Hero full-width** (fuori dal container `max-w-3xl`):
+- Immagine `fill` con `opacity-60` su sfondo `stone-900`
+- Gradiente `from-stone-900 via-stone-900/30 to-transparent`
+- Link "← Tutte le gite" in alto a sinistra sull'overlay
+- Zona · difficoltà (colore) + titolo serif + descrizione sovrapposti in basso
+
+**Linea colorata** (`h-0.5`, colore dalla difficoltà, `scaleX` animata) separa hero e contenuto.
+
+**Contenuto** (`max-w-3xl mx-auto`):
+- Stats card: `bg-stone-50 rounded-xl p-6`, griglia `2→3→5 colonne`
+- Mappa `h-72 rounded-lg`
+- Corpo markdown (`prose prose-stone`)
 
 ## Rendering markdown (`app/gite/[slug]/page.tsx`)
 
 ```ts
 const processed = await remark().use(remarkGfm).use(remarkHtml, { sanitize: false }).process(hike.content)
+const contentHtml = processed.toString().replace(/<p>\s*(?:<a[^>]*>)?\s*<img[^>]*>\s*(?:<\/a>)?\s*<\/p>/gi, '')
 ```
 
-`remark-gfm` è indispensabile per le tabelle markdown (es. "Dati tecnici"). Senza di esso le pipe `|`
-vengono renderizzate come testo grezzo.
+- `remark-gfm` obbligatorio per le tabelle markdown.
+- La regex rimuove l'immagine dal corpo (già usata come hero). Le immagini nel markdown sono link
+  cliccabili `[![alt](url)](link)`, quindi remark genera `<p><a href="..."><img ...></a></p>` —
+  la regex cattura sia `<p><img>` semplice sia `<p><a><img></a></p>`.
 
 ## Mappa (`components/Map.tsx`)
 
 - **Campeggio**: `CAMP = { lat: 45.7168, lng: 7.2619 }` — Camping Monte Bianco, Sarre (AO)
-- **Rotta OSRM**: `https://router.project-osrm.org/route/v1/driving/...` — recupera polyline GeoJSON,
-  la converte da `[lng, lat]` a `[lat, lng]` per Leaflet. Auto-carica la rotta se la mappa mostra
-  una sola gita (pagina gita); in mappa globale si carica al click sul marker.
+- **FitBounds**: componente figlio che usa `useMap()` per chiamare `map.fitBounds()` e centrare la
+  vista sull'intero percorso. Si attiva solo quando `hikes.length === 1` (pagina singola gita).
+  `boundsPoints`: usa la rotta OSRM se disponibile, altrimenti `[CAMP, gita]`.
+- **Rotta OSRM**: `https://router.project-osrm.org/route/v1/driving/...` — converte da `[lng, lat]`
+  a `[lat, lng]` per Leaflet. Auto-carica per gita singola; si carica al click sul marker in mappa globale.
 - **Google Maps deep link**: `https://www.google.com/maps/dir/?api=1&origin=CAMP&destination=GITA&travelmode=driving`
-- **Stile popup**: inline styles dentro il JSX del Popup (non classi Tailwind — Leaflet monta il popup
-  fuori dall'albero React, Tailwind non lo raggiunge). Override globali del wrapper in `globals.css`.
-- **Colori difficoltà**: emerald (facile) · amber (media) · orange (impegnativa) · red (molto impegnativa)
+- **Stile popup**: inline styles dentro il JSX del Popup (Leaflet monta fuori dall'albero React).
+  Override globali del wrapper in `globals.css`.
 
-**ATTENZIONE**: `MapWrapper` deve avere `'use client'` in cima — Next.js 15 vieta `ssr: false` nei
-server component. `Map.tsx` stesso non ha `'use client'` esplicito, ma è importato solo da `MapWrapper`.
+**ATTENZIONE**: `MapWrapper` deve avere `'use client'` — Next.js 15 vieta `ssr: false` nei server component.
 
 ## Pattern server/client
 
-Ogni pagina con dati dal filesystem segue questo schema:
+Ogni pagina con dati dal filesystem:
 1. **Server component** (`page.tsx`): chiama `getAllHikes()` o `getHikeBySlug()`, passa dati come props
-2. **Client component** (`HomeClient.tsx`, `HikePageContent.tsx`): riceve i dati, gestisce animazioni e stato
-
-Questo evita l'errore "cannot use fs in client component".
+2. **Client component** (`HomeClient.tsx`, `HikePageContent.tsx`): riceve i dati, gestisce animazioni
 
 ## Gotcha già risolti
 
@@ -105,11 +126,13 @@ Questo evita l'errore "cannot use fs in client component".
 | Tailwind v4 incompatibile con Node 18 | Usa v3 con `tailwind.config.ts` e `@tailwind` directives |
 | `params` in Next.js 15 | Deve essere `Promise<{ slug: string }>` e awaited |
 | `MapWrapper` senza `'use client'` | Next.js 15 rifiuta `ssr: false` nei server component |
-| Colore link nel popup Leaflet | Leaflet override CSS — aggiunto `.leaflet-popup-content a[style] { color: inherit !important; }` in globals.css |
+| Colore link nel popup Leaflet | `.leaflet-popup-content a[style] { color: inherit !important; }` in globals.css |
 | Tabelle markdown come pipe grezze | `remark-gfm` obbligatorio nel chain remark |
 | `rootDirectory` in `vercel.json` | Rimosso — impostare Root Directory via Vercel UI |
 | Coordinate stringa vuota (`''`) | Guard `hike.coordinate && !isNaN(lat)` prima del render |
 | `getAllHikes()` nel client component | Spostare la chiamata nel server component, passare i dati come props |
+| Immagine ancora visibile nel corpo markdown | Le immagini sono link `[![](url)](link)` → remark genera `<p><a><img></a></p>`, non `<p><img></p>` — regex aggiornata per catturare entrambi |
+| Mappa centrata solo sulla destinazione | Componente `FitBounds` con `useMap()` + `fitBounds([CAMP, gita])` |
 
 ## Come sviluppare localmente
 
@@ -132,10 +155,8 @@ del repo (non serve alcuna variabile d'ambiente).
 
 ## Prossimi possibili passi
 
-- **Immagini reali**: `HikeCard` e `HikePageContent` usano `imageUrl` dal frontmatter ma non c'è ancora
-  nessuna immagine vera nelle schede gite — tutte mostrano un placeholder grigio.
 - **Metadata OG**: `generateMetadata` è implementato per le pagine gita, manca per homepage e `/mappa`.
-- **Filtro zona + difficoltà combinato**: i filtri sono OR separati, non si può filtrare per "facile
-  nel Gran Paradiso" contemporaneamente.
 - **Tile mappa**: attualmente OpenStreetMap standard. Per un look più minimal si può usare
   `https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png` (Stadia, free tier).
+- **Filtro per zona**: rimosso con il redesign a sezioni; se si vuole reintrodurre, va ripensato
+  come filtro secondario dentro ogni sezione difficoltà, non globale.
