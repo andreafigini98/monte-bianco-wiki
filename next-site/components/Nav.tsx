@@ -20,7 +20,7 @@ export default function Nav() {
       <Link href="/" className="font-serif text-xl font-bold text-stone-900 tracking-tight">
         Valle d&apos;Aosta
       </Link>
-      <div className="flex gap-8 ml-auto">
+      <div className="flex items-center gap-8 ml-auto">
         {links.map(l => (
           <Link
             key={l.href}
@@ -41,6 +41,14 @@ export default function Nav() {
             )}
           </Link>
         ))}
+
+        <Link
+          href="/segreto"
+          className="text-xl leading-none opacity-40 hover:opacity-100 transition-opacity"
+          title="Area riservata"
+        >
+          🤫
+        </Link>
       </div>
     </motion.nav>
   )
