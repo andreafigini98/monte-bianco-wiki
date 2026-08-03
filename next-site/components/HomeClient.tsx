@@ -95,7 +95,7 @@ function DifficultySection({
             initial={{ opacity: 0, y: 28, filter: 'blur(6px)' }}
             whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.65, ease, delay: i * 0.07 }}
+            transition={{ duration: 0.4, ease, delay: i * 0.04 }}
           >
             <HikeCard hike={h} />
           </motion.div>

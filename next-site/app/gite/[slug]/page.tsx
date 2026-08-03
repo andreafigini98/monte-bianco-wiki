@@ -22,6 +22,7 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
   if (!hike) notFound()
 
   const processed = await remark().use(remarkGfm).use(remarkHtml, { sanitize: false }).process(hike.content)
+  const contentHtml = processed.toString().replace(/<p>\s*<img[^>]*>\s*<\/p>/gi, '')
 
   return (
     <HikePageContent
@@ -40,7 +41,7 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
         { label: 'Tempo', value: hike.tempo },
         { label: 'Dal campeggio', value: hike.da_base },
       ]}
-      contentHtml={processed.toString()}
+      contentHtml={contentHtml}
     />
   )
 }
