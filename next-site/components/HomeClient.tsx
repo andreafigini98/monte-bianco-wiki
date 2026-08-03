@@ -15,16 +15,11 @@ const heroItem = {
   visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease } },
 }
 
-const DIFFICULTIES: {
-  level: DifficultyLevel
-  label: string
-  color: string
-  bars: number
-}[] = [
-  { level: 'facile',             label: 'Facile',             color: '#10b981', bars: 1 },
-  { level: 'media',              label: 'Media',              color: '#eab308', bars: 2 },
-  { level: 'impegnativa',        label: 'Impegnativa',        color: '#f97316', bars: 3 },
-  { level: 'molto impegnativa',  label: 'Molto Impegnativa',  color: '#ef4444', bars: 4 },
+const DIFFICULTIES: { level: DifficultyLevel; label: string; color: string }[] = [
+  { level: 'facile',             label: 'Facile',             color: '#10b981' },
+  { level: 'media',              label: 'Media',              color: '#eab308' },
+  { level: 'impegnativa',        label: 'Impegnativa',        color: '#f97316' },
+  { level: 'molto impegnativa',  label: 'Molto Impegnativa',  color: '#ef4444' },
 ]
 
 function DifficultySection({
@@ -56,28 +51,6 @@ function DifficultySection({
             {String(index + 1).padStart(2, '0')}
           </motion.span>
 
-          {/* 4 intensity bars — filled count = difficulty level */}
-          <motion.div
-            className="flex gap-1.5"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.5, delay: 0.25 }}
-          >
-            {[1, 2, 3, 4].map(n => (
-              <motion.div
-                key={n}
-                className="h-1.5 rounded-full"
-                style={{ background: n <= difficulty.bars ? difficulty.color : '#e7e5e4' }}
-                initial={{ scaleX: 0, originX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.35, delay: 0.3 + n * 0.07, ease }}
-              >
-                <div className="w-5" />
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
 
         {/* Big serif title in difficulty color */}
