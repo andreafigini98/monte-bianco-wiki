@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-alpine-green: oklch(0.55 0.15 145);
+  --color-slate-mountain: oklch(0.35 0.02 250);
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
