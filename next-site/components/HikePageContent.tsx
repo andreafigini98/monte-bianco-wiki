@@ -96,7 +96,7 @@ export default function HikePageContent({
       {/* Map */}
       {hasMap && (
         <motion.div
-          className="h-72 overflow-hidden border border-stone-100"
+          className="h-72 overflow-hidden border border-stone-100 rounded-lg"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease, delay: 0.5 }}
