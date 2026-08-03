@@ -9,14 +9,12 @@ const DIFF_COLOR: Record<DifficultyLevel, string> = {
   'molto impegnativa': 'text-red-600',
 }
 
-export default function HikeCard({ hike, index }: { hike: Hike; index?: number }) {
-  const num = index !== undefined ? String(index + 1).padStart(2, '0') : null
-
+export default function HikeCard({ hike }: { hike: Hike }) {
   return (
     <Link href={`/gite/${hike.slug}`} className="group block">
 
       {/* Image */}
-      <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-5">
+      <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-5 rounded-lg">
         {hike.imageUrl && (
           <Image
             src={hike.imageUrl}
@@ -28,19 +26,7 @@ export default function HikeCard({ hike, index }: { hike: Hike; index?: number }
         )}
 
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/25 transition-colors duration-500" />
-
-        {/* Arrow button — slides up on hover */}
-        <div className="absolute bottom-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out shadow-sm">
-          <span className="text-stone-900 text-xs font-medium leading-none">→</span>
-        </div>
-
-        {/* Index number — top left */}
-        {num && (
-          <div className="absolute top-3 left-3 text-[10px] font-medium tracking-widest text-white/70 tabular-nums leading-none">
-            {num}
-          </div>
-        )}
+        <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/20 transition-colors duration-500" />
       </div>
 
       {/* Text */}
