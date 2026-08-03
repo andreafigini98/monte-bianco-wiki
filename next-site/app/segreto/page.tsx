@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import SecretLogin from '@/components/SecretLogin'
 import TodoList from '@/components/TodoList'
+import { getTodos } from '@/lib/todos'
 
 async function tokenFor(password: string): Promise<string> {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password))
@@ -15,5 +16,7 @@ export default async function SecretoPage() {
   const expected = await tokenFor(process.env.SECRET_PASSWORD ?? '')
 
   if (token !== expected) return <SecretLogin />
-  return <TodoList />
+
+  const todos = await getTodos()
+  return <TodoList todos={todos} />
 }

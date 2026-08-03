@@ -1,40 +1,19 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useTransition, useRef } from 'react'
+import { addTodo, toggleTodo, deleteTodo } from '@/app/actions/todos'
+import type { Todo } from '@/lib/todos'
 
-type Todo = { id: string; text: string; done: boolean }
-
-const STORAGE_KEY = 'wiki-todos'
-
-export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([])
+export default function TodoList({ todos }: { todos: Todo[] }) {
   const [input, setInput] = useState('')
+  const [isPending, startTransition] = useTransition()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setTodos(JSON.parse(raw))
-    } catch {}
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-  }, [todos])
-
-  function add() {
+  function handleAdd() {
     const text = input.trim()
     if (!text) return
-    setTodos(prev => [{ id: crypto.randomUUID(), text, done: false }, ...prev])
     setInput('')
     inputRef.current?.focus()
-  }
-
-  function toggle(id: string) {
-    setTodos(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
-  }
-
-  function remove(id: string) {
-    setTodos(prev => prev.filter(t => t.id !== id))
+    startTransition(() => addTodo(text))
   }
 
   const open = todos.filter(t => !t.done)
@@ -60,13 +39,14 @@ export default function TodoList() {
           ref={inputRef}
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && add()}
+          onKeyDown={e => e.key === 'Enter' && handleAdd()}
           placeholder="Nuova cosa da fare…"
-          className="flex-1 border border-stone-200 rounded-lg px-4 py-2.5 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-900 transition-colors"
+          disabled={isPending}
+          className="flex-1 border border-stone-200 rounded-lg px-4 py-2.5 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-900 disabled:opacity-50 transition-colors"
         />
         <button
-          onClick={add}
-          disabled={!input.trim()}
+          onClick={handleAdd}
+          disabled={!input.trim() || isPending}
           className="px-5 py-2.5 bg-stone-900 text-white text-xs uppercase tracking-widest rounded-lg hover:bg-stone-700 disabled:opacity-30 transition-colors"
         >
           +
@@ -79,13 +59,15 @@ export default function TodoList() {
           {open.map(t => (
             <li key={t.id} className="flex items-center gap-3 group py-2 border-b border-stone-50">
               <button
-                onClick={() => toggle(t.id)}
-                className="w-4 h-4 rounded-full border border-stone-300 hover:border-stone-900 transition-colors flex-shrink-0"
+                onClick={() => startTransition(() => toggleTodo(t.id))}
+                disabled={isPending}
+                className="w-4 h-4 rounded-full border border-stone-300 hover:border-stone-900 disabled:opacity-40 transition-colors flex-shrink-0"
               />
               <span className="flex-1 text-sm text-stone-800">{t.text}</span>
               <button
-                onClick={() => remove(t.id)}
-                className="text-stone-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 text-xs"
+                onClick={() => startTransition(() => deleteTodo(t.id))}
+                disabled={isPending}
+                className="text-stone-200 hover:text-red-400 disabled:opacity-40 transition-colors opacity-0 group-hover:opacity-100 text-xs"
               >
                 ✕
               </button>
@@ -102,13 +84,15 @@ export default function TodoList() {
             {done.map(t => (
               <li key={t.id} className="flex items-center gap-3 group py-2 border-b border-stone-50">
                 <button
-                  onClick={() => toggle(t.id)}
-                  className="w-4 h-4 rounded-full bg-stone-200 flex-shrink-0"
+                  onClick={() => startTransition(() => toggleTodo(t.id))}
+                  disabled={isPending}
+                  className="w-4 h-4 rounded-full bg-stone-200 disabled:opacity-40 flex-shrink-0"
                 />
                 <span className="flex-1 text-sm text-stone-400 line-through">{t.text}</span>
                 <button
-                  onClick={() => remove(t.id)}
-                  className="text-stone-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 text-xs"
+                  onClick={() => startTransition(() => deleteTodo(t.id))}
+                  disabled={isPending}
+                  className="text-stone-200 hover:text-red-400 disabled:opacity-40 transition-colors opacity-0 group-hover:opacity-100 text-xs"
                 >
                   ✕
                 </button>
@@ -121,6 +105,7 @@ export default function TodoList() {
       {todos.length === 0 && (
         <p className="text-sm text-stone-300 text-center py-12">Niente ancora. Aggiungila sopra.</p>
       )}
+
     </main>
   )
 }
