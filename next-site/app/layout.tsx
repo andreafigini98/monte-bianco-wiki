@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Geist, Playfair_Display } from 'next/font/google'
 import Nav from '@/components/Nav'
 import './globals.css'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
 export const metadata: Metadata = {
   title: 'Monte Bianco Wiki',
@@ -12,11 +13,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={geist.variable}>
-      <body className="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+    <html lang="it" className={`${geist.variable} ${playfair.variable}`}>
+      <body className="bg-white text-stone-900 min-h-screen flex flex-col">
         <Nav />
         <div className="flex-1">{children}</div>
-        <footer className="bg-slate-800 text-slate-400 text-center text-xs py-4">
+        <footer className="border-t border-stone-100 text-stone-400 text-center text-xs py-8 tracking-wide">
           Dati da fonti pubbliche — verifica sempre condizioni e meteo prima di partire.
         </footer>
       </body>

@@ -3,12 +3,13 @@ import type { Config } from 'tailwindcss'
 const config: Config = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
-      colors: {
-        'alpine-green': 'oklch(0.55 0.15 145)',
-        'slate-mountain': 'oklch(0.35 0.02 250)',
+      fontFamily: {
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+        sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
       },
     },
   },

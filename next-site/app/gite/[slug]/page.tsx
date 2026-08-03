@@ -17,11 +17,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: `${hike.title} — Monte Bianco Wiki`, description: hike.descrizione }
 }
 
-const BADGE: Record<DifficultyLevel, string> = {
-  'facile': 'bg-emerald-100 text-emerald-800',
-  'media': 'bg-yellow-100 text-yellow-800',
-  'impegnativa': 'bg-orange-100 text-orange-800',
-  'molto impegnativa': 'bg-red-100 text-red-800',
+const DIFF_COLOR: Record<DifficultyLevel, string> = {
+  'facile': 'text-emerald-600',
+  'media': 'text-amber-600',
+  'impegnativa': 'text-orange-600',
+  'molto impegnativa': 'text-red-600',
 }
 
 export default async function HikePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -35,38 +35,42 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
   const [lat, lng] = hike.coordinate.split(',').map(Number)
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-      <Link href="/" className="text-sm text-slate-500 hover:text-slate-700">← Tutte le gite</Link>
+    <main className="max-w-3xl mx-auto px-6 md:px-12 py-12 space-y-10">
+      <Link href="/" className="text-xs uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors">
+        ← Tutte le gite
+      </Link>
 
-      <div className="space-y-2">
-        <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-3xl font-bold text-slate-900">{hike.title}</h1>
-          <span className={`text-sm font-medium px-3 py-1 rounded-full capitalize ${BADGE[hike.difficultyLevel]}`}>
+      <div className="border-b border-stone-100 pb-10 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="text-xs uppercase tracking-widest text-stone-400">{hike.zona}</span>
+          <span className="text-stone-200">·</span>
+          <span className={`text-xs uppercase tracking-wide font-medium capitalize ${DIFF_COLOR[hike.difficultyLevel]}`}>
             {hike.difficultyLevel}
           </span>
         </div>
-        <p className="text-slate-500">{hike.descrizione}</p>
+        <h1 className="font-serif text-4xl md:text-5xl font-bold leading-tight text-stone-900">
+          {hike.title}
+        </h1>
+        <p className="text-stone-500 text-lg leading-relaxed">{hike.descrizione}</p>
       </div>
 
-      <table className="w-full text-sm border-collapse">
-        <tbody>
-          {[
-            ['Difficoltà', hike.difficolta],
-            ['Dislivello', hike.dislivello],
-            ['Lunghezza', hike.lunghezza],
-            ['Tempo', hike.tempo],
-            ['Dal campeggio', hike.da_base],
-          ].map(([label, value]) => (
-            <tr key={label} className="border-b border-slate-100">
-              <td className="py-2 pr-4 font-medium text-slate-600 w-36">{label}</td>
-              <td className="py-2 text-slate-900">{value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+        {[
+          { label: 'Difficoltà', value: hike.difficolta },
+          { label: 'Dislivello', value: hike.dislivello },
+          { label: 'Lunghezza', value: hike.lunghezza },
+          { label: 'Tempo', value: hike.tempo },
+          { label: 'Dal campeggio', value: hike.da_base },
+        ].map(({ label, value }) => (
+          <div key={label} className="space-y-1">
+            <p className="text-xs uppercase tracking-widest text-stone-400">{label}</p>
+            <p className="text-sm font-medium text-stone-900">{value}</p>
+          </div>
+        ))}
+      </div>
 
       {hike.coordinate && !isNaN(lat) && !isNaN(lng) && (
-        <div className="h-64 rounded-xl overflow-hidden border border-slate-200">
+        <div className="h-72 overflow-hidden border border-stone-100">
           <MapWrapper
             hikes={[{ slug: hike.slug, title: hike.title, coordinate: hike.coordinate, difficultyLevel: hike.difficultyLevel }]}
             zoom={13}
@@ -76,7 +80,7 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
       )}
 
       <article
-        className="prose prose-slate max-w-none"
+        className="prose prose-stone max-w-none"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
     </main>

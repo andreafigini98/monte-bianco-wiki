@@ -15,41 +15,49 @@ type Props = {
 
 export default function FilterBar({ difficulty, zona, onDifficulty, onZona, total, filtered }: Props) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <select
-        value={difficulty}
-        onChange={e => onDifficulty(e.target.value as DifficultyLevel | '')}
-        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm"
-      >
-        <option value="">Tutte le difficoltà</option>
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
         {DIFFICULTIES.map(d => (
-          <option key={d} value={d} className="capitalize">{d}</option>
+          <button
+            key={d}
+            onClick={() => onDifficulty(difficulty === d ? '' : d)}
+            className={`px-4 py-1.5 rounded-full text-sm capitalize border transition-colors ${
+              difficulty === d
+                ? 'bg-stone-900 text-white border-stone-900'
+                : 'bg-white text-stone-600 border-stone-200 hover:border-stone-500'
+            }`}
+          >
+            {d}
+          </button>
         ))}
-      </select>
-
-      <select
-        value={zona}
-        onChange={e => onZona(e.target.value as Zona | '')}
-        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm"
-      >
-        <option value="">Tutte le zone</option>
+        <span className="w-px bg-stone-200 mx-1 self-stretch" />
         {ZONE.map(z => (
-          <option key={z} value={z}>{z}</option>
+          <button
+            key={z}
+            onClick={() => onZona(zona === z ? '' : z)}
+            className={`px-4 py-1.5 rounded-full text-sm border transition-colors ${
+              zona === z
+                ? 'bg-stone-900 text-white border-stone-900'
+                : 'bg-white text-stone-600 border-stone-200 hover:border-stone-500'
+            }`}
+          >
+            {z}
+          </button>
         ))}
-      </select>
-
-      {(difficulty || zona) && (
-        <button
-          onClick={() => { onDifficulty(''); onZona('') }}
-          className="text-xs text-slate-500 underline"
-        >
-          Azzera filtri
-        </button>
-      )}
-
-      <span className="ml-auto text-sm text-slate-500">
-        {filtered === total ? `${total} gite` : `${filtered} di ${total} gite`}
-      </span>
+      </div>
+      <div className="flex items-center gap-4 text-xs text-stone-400">
+        <span>
+          {filtered === total ? `${total} gite` : `${filtered} di ${total} gite`}
+        </span>
+        {(difficulty || zona) && (
+          <button
+            onClick={() => { onDifficulty(''); onZona('') }}
+            className="underline hover:text-stone-700 transition-colors"
+          >
+            Azzera filtri
+          </button>
+        )}
+      </div>
     </div>
   )
 }
