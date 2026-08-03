@@ -13,7 +13,6 @@ export type MapHike = {
 
 const CAMP = { lat: 45.7168, lng: 7.2619 }
 
-// Fix broken default marker icons in webpack builds
 delete (L.Icon.Default.prototype as any)._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -28,23 +27,30 @@ const DIFFICULTY_COLOR: Record<string, string> = {
   'molto impegnativa': '#ef4444',
 }
 
-function coloredIcon(difficulty: string, size = 16) {
-  const color = DIFFICULTY_COLOR[difficulty] ?? '#64748b'
+const DIFFICULTY_LABEL: Record<string, string> = {
+  'facile': 'Facile',
+  'media': 'Media',
+  'impegnativa': 'Impegnativa',
+  'molto impegnativa': 'Molto impegnativa',
+}
+
+function coloredIcon(difficulty: string, size = 14) {
+  const color = DIFFICULTY_COLOR[difficulty] ?? '#78716c'
   return L.divIcon({
     className: '',
-    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.4)"></div>`,
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -size / 2 - 4],
+    popupAnchor: [0, -size / 2 - 6],
   })
 }
 
 const campIcon = L.divIcon({
   className: '',
-  html: `<div style="width:22px;height:22px;border-radius:50%;background:#1d4ed8;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:11px">⛺</div>`,
-  iconSize: [22, 22],
-  iconAnchor: [11, 11],
-  popupAnchor: [0, -16],
+  html: `<div style="width:18px;height:18px;border-radius:50%;background:#292524;border:2.5px solid white;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+  popupAnchor: [0, -14],
 })
 
 async function fetchOsrmRoute(toLat: number, toLng: number): Promise<[number, number][]> {
@@ -69,7 +75,6 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
   const [route, setRoute] = useState<[number, number][]>([])
   const [loadingSlug, setLoadingSlug] = useState<string | null>(null)
 
-  // Auto-load route for mini-map (single hike)
   useEffect(() => {
     if (hikes.length !== 1) return
     const [lat, lng] = hikes[0].coordinate.split(',').map(Number)
@@ -78,7 +83,7 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
   }, [hikes])
 
   async function handleMarkerClick(h: MapHike) {
-    if (hikes.length === 1) return // already loaded
+    if (hikes.length === 1) return
     const [lat, lng] = h.coordinate.split(',').map(Number)
     if (isNaN(lat) || isNaN(lng)) return
     setLoadingSlug(h.slug)
@@ -91,15 +96,16 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
     <MapContainer center={center} zoom={zoom} className="h-full w-full" scrollWheelZoom>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
       {/* Campground marker */}
       <Marker position={[CAMP.lat, CAMP.lng]} icon={campIcon}>
-        <Popup>
-          <div className="text-sm space-y-0.5">
-            <p className="font-semibold">⛺ Camping Monte Bianco</p>
-            <p className="text-slate-500 text-xs">Sarre (AO) — base di partenza</p>
+        <Popup maxWidth={200}>
+          <div style={{ padding: '14px 16px 12px', fontFamily: 'inherit' }}>
+            <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#a8a29e', marginBottom: 4 }}>Base</p>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: '#1c1917', lineHeight: 1.3 }}>Camping Monte Bianco</p>
+            <p style={{ fontSize: '12px', color: '#78716c', marginTop: 2 }}>Sarre (AO)</p>
           </div>
         </Popup>
       </Marker>
@@ -108,7 +114,7 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
       {route.length > 0 && (
         <Polyline
           positions={route}
-          pathOptions={{ color: '#1d4ed8', weight: 3, opacity: 0.7, dashArray: '8 4' }}
+          pathOptions={{ color: '#292524', weight: 2.5, opacity: 0.55, dashArray: '6 5' }}
         />
       )}
 
@@ -117,6 +123,8 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
         const [lat, lng] = h.coordinate.split(',').map(Number)
         if (isNaN(lat) || isNaN(lng)) return null
         const isLoading = loadingSlug === h.slug
+        const diffColor = DIFFICULTY_COLOR[h.difficultyLevel] ?? '#78716c'
+
         return (
           <Marker
             key={h.slug}
@@ -124,22 +132,57 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
             icon={coloredIcon(h.difficultyLevel)}
             eventHandlers={{ click: () => handleMarkerClick(h) }}
           >
-            <Popup>
-              <div className="text-sm space-y-2" style={{ minWidth: 180 }}>
-                <p className="font-semibold leading-tight">{h.title}</p>
-                <p className="capitalize text-slate-500 text-xs">{h.difficultyLevel}</p>
-                <div className="flex flex-col gap-1.5 pt-1">
+            <Popup maxWidth={220}>
+              <div style={{ padding: '14px 16px 14px', fontFamily: 'inherit' }}>
+                {/* Difficulty dot + label */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: diffColor, display: 'inline-block', flexShrink: 0 }} />
+                  <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.09em', color: '#a8a29e' }}>
+                    {DIFFICULTY_LABEL[h.difficultyLevel] ?? h.difficultyLevel}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <p style={{ fontSize: '14px', fontWeight: 700, color: '#1c1917', lineHeight: 1.3, marginBottom: 12 }}>
+                  {h.title}
+                </p>
+
+                {/* Divider */}
+                <div style={{ height: 1, background: '#f5f5f4', marginBottom: 12 }} />
+
+                {/* Actions */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <a
                     href={mapsUrl(lat, lng)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded text-center justify-center transition-colors"
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: 'white',
+                      background: '#1c1917',
+                      padding: '8px 12px',
+                      borderRadius: 3,
+                      textDecoration: 'none',
+                    }}
                   >
-                    🗺️ Naviga da campeggio
+                    Naviga da campeggio
                   </a>
                   <a
                     href={`/gite/${h.slug}`}
-                    className="text-xs text-slate-500 hover:text-slate-800 text-center transition-colors"
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      fontSize: '11px',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: isLoading ? '#a8a29e' : '#78716c',
+                      textDecoration: 'none',
+                    }}
                   >
                     {isLoading ? 'Caricamento percorso…' : 'Vedi scheda →'}
                   </a>
