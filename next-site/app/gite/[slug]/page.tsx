@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { remark } from 'remark'
+import remarkGfm from 'remark-gfm'
 import remarkHtml from 'remark-html'
 import { getAllHikes, getHikeBySlug } from '@/lib/hikes'
 import type { DifficultyLevel } from '@/lib/hikes'
@@ -29,7 +30,7 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
   const hike = getHikeBySlug(slug)
   if (!hike) notFound()
 
-  const processed = await remark().use(remarkHtml, { sanitize: false }).process(hike.content)
+  const processed = await remark().use(remarkGfm).use(remarkHtml, { sanitize: false }).process(hike.content)
   const contentHtml = processed.toString()
 
   const [lat, lng] = hike.coordinate.split(',').map(Number)
