@@ -20,7 +20,7 @@ export default function HomeClient({ hikes }: { hikes: Hike[] }) {
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-6">
       <div className="space-y-1">
         <h1 className="text-3xl font-bold text-slate-900">Gite in Valle d&apos;Aosta</h1>
-        <p className="text-slate-500">Base: Camping Monte Bianco, Sarre — 21 gite verificate</p>
+        <p className="text-slate-500">Base: Camping Monte Bianco, Sarre — {hikes.length} gite verificate</p>
       </div>
 
       <FilterBar
