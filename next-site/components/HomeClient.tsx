@@ -1,9 +1,8 @@
 'use client'
-import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import type { Hike, DifficultyLevel, Zona } from '@/lib/hikes'
+import { useMemo } from 'react'
+import { motion } from 'framer-motion'
+import type { Hike, DifficultyLevel } from '@/lib/hikes'
 import HikeCard from '@/components/HikeCard'
-import FilterBar from '@/components/FilterBar'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -16,40 +15,140 @@ const heroItem = {
   visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease } },
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 28, filter: 'blur(6px)' },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.65, ease, delay: i * 0.05 },
-  }),
-  exit: { opacity: 0, scale: 0.94, filter: 'blur(4px)', transition: { duration: 0.18 } },
+const DIFFICULTIES: {
+  level: DifficultyLevel
+  label: string
+  color: string
+  bars: number
+}[] = [
+  { level: 'facile',             label: 'Facile',             color: '#10b981', bars: 1 },
+  { level: 'media',              label: 'Media',              color: '#eab308', bars: 2 },
+  { level: 'impegnativa',        label: 'Impegnativa',        color: '#f97316', bars: 3 },
+  { level: 'molto impegnativa',  label: 'Molto Impegnativa',  color: '#ef4444', bars: 4 },
+]
+
+function DifficultySection({
+  difficulty,
+  hikes,
+  index,
+}: {
+  difficulty: (typeof DIFFICULTIES)[number]
+  hikes: Hike[]
+  index: number
+}) {
+  if (hikes.length === 0) return null
+
+  return (
+    <section className="border-t border-stone-100 py-20">
+
+      {/* ── Section header ── */}
+      <div className="mb-12">
+
+        {/* Row: number + intensity bars */}
+        <div className="flex items-center justify-between mb-5">
+          <motion.span
+            className="text-[10px] uppercase tracking-widest text-stone-300 tabular-nums"
+            initial={{ opacity: 0, x: -12 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.45, ease }}
+          >
+            {String(index + 1).padStart(2, '0')}
+          </motion.span>
+
+          {/* 4 intensity bars — filled count = difficulty level */}
+          <motion.div
+            className="flex gap-1.5"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+          >
+            {[1, 2, 3, 4].map(n => (
+              <motion.div
+                key={n}
+                className="h-1.5 rounded-full"
+                style={{ background: n <= difficulty.bars ? difficulty.color : '#e7e5e4' }}
+                initial={{ scaleX: 0, originX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.35, delay: 0.3 + n * 0.07, ease }}
+              >
+                <div className="w-5" />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Big serif title in difficulty color */}
+        <motion.h2
+          className="font-serif font-bold leading-none"
+          style={{ color: difficulty.color, fontSize: 'clamp(3rem, 8vw, 6rem)' }}
+          initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7, ease, delay: 0.1 }}
+        >
+          {difficulty.label}
+        </motion.h2>
+
+        {/* Colored animated rule */}
+        <motion.div
+          className="h-px mt-5 origin-left"
+          style={{ background: difficulty.color }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.9, ease, delay: 0.25 }}
+        />
+
+        {/* Hike count */}
+        <motion.p
+          className="text-xs uppercase tracking-widest text-stone-400 mt-3"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.5 }}
+        >
+          {hikes.length} {hikes.length === 1 ? 'gita' : 'gite'}
+        </motion.p>
+      </div>
+
+      {/* ── Cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+        {hikes.map((h, i) => (
+          <motion.div
+            key={h.slug}
+            initial={{ opacity: 0, y: 28, filter: 'blur(6px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.65, ease, delay: i * 0.07 }}
+          >
+            <HikeCard hike={h} />
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  )
 }
 
 export default function HomeClient({ hikes }: { hikes: Hike[] }) {
-  const [difficulty, setDifficulty] = useState<DifficultyLevel | ''>('')
-  const [zona, setZona] = useState<Zona | ''>('')
-
-  const filtered = useMemo(
-    () => hikes.filter(h =>
-      (!difficulty || h.difficultyLevel === difficulty) &&
-      (!zona || h.zona === zona)
-    ),
-    [hikes, difficulty, zona]
+  const grouped = useMemo(
+    () => DIFFICULTIES.map(d => ({ ...d, hikes: hikes.filter(h => h.difficultyLevel === d.level) })),
+    [hikes],
   )
 
   return (
     <main className="max-w-7xl mx-auto px-6 md:px-12">
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <motion.div
         className="relative py-16 md:py-28 border-b border-stone-100 overflow-hidden"
         variants={heroContainer}
         initial="hidden"
         animate="visible"
       >
-        {/* Decorative large background number */}
+        {/* Decorative background number */}
         <motion.span
           className="absolute right-0 top-1/2 -translate-y-1/2 font-serif font-bold text-[20vw] leading-none text-stone-50 select-none pointer-events-none"
           initial={{ opacity: 0, x: 60 }}
@@ -60,10 +159,7 @@ export default function HomeClient({ hikes }: { hikes: Hike[] }) {
         </motion.span>
 
         <div className="relative space-y-5 max-w-3xl">
-          <motion.p
-            className="text-xs uppercase tracking-widest text-stone-400"
-            variants={heroItem}
-          >
+          <motion.p className="text-xs uppercase tracking-widest text-stone-400" variants={heroItem}>
             Valle d&apos;Aosta · Estate 2026
           </motion.p>
 
@@ -75,7 +171,6 @@ export default function HomeClient({ hikes }: { hikes: Hike[] }) {
             <span className="text-stone-400">da scoprire.</span>
           </motion.h1>
 
-          {/* Animated divider line */}
           <motion.div
             className="h-px bg-stone-200 origin-left"
             initial={{ scaleX: 0 }}
@@ -83,61 +178,18 @@ export default function HomeClient({ hikes }: { hikes: Hike[] }) {
             transition={{ duration: 0.9, ease, delay: 0.45 }}
           />
 
-          <motion.p
-            className="text-stone-500 text-lg max-w-xl leading-relaxed"
-            variants={heroItem}
-          >
+          <motion.p className="text-stone-500 text-lg max-w-xl leading-relaxed" variants={heroItem}>
             Base: Camping Monte Bianco, Sarre. Gran Paradiso, Monte Bianco,
             Cervino, Monte Rosa — tutto a meno di 1h30 d&apos;auto.
           </motion.p>
         </div>
       </motion.div>
 
-      {/* Filters */}
-      <motion.div
-        className="py-8 border-b border-stone-100"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
-      >
-        <FilterBar
-          difficulty={difficulty}
-          zona={zona}
-          onDifficulty={setDifficulty}
-          onZona={setZona}
-          total={hikes.length}
-          filtered={filtered.length}
-        />
-      </motion.div>
+      {/* ── Difficulty sections ── */}
+      {grouped.map((d, i) => (
+        <DifficultySection key={d.level} difficulty={d} hikes={d.hikes} index={i} />
+      ))}
 
-      {/* Card grid */}
-      {filtered.length === 0 ? (
-        <motion.p
-          className="text-stone-400 py-24 text-center text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          Nessuna gita corrisponde ai filtri selezionati.
-        </motion.p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14 py-14">
-          <AnimatePresence mode="popLayout">
-            {filtered.map((h, i) => (
-              <motion.div
-                key={h.slug}
-                custom={i}
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                layout
-              >
-                <HikeCard hike={h} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      )}
     </main>
   )
 }
