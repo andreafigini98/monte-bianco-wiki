@@ -1,8 +1,17 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
+import { useState, useEffect, useMemo } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+
+function FitBounds({ points }: { points: [number, number][] }) {
+  const map = useMap()
+  useEffect(() => {
+    if (points.length < 2) return
+    map.fitBounds(L.latLngBounds(points), { padding: [32, 32] })
+  }, [map, points])
+  return null
+}
 
 export type MapHike = {
   slug: string
@@ -75,6 +84,14 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
   const [route, setRoute] = useState<[number, number][]>([])
   const [loadingSlug, setLoadingSlug] = useState<string | null>(null)
 
+  const boundsPoints = useMemo<[number, number][]>(() => {
+    if (hikes.length !== 1) return []
+    const [lat, lng] = hikes[0].coordinate.split(',').map(Number)
+    if (isNaN(lat) || isNaN(lng)) return []
+    if (route.length > 0) return route
+    return [[CAMP.lat, CAMP.lng], [lat, lng]]
+  }, [hikes, route])
+
   useEffect(() => {
     if (hikes.length !== 1) return
     const [lat, lng] = hikes[0].coordinate.split(',').map(Number)
@@ -94,6 +111,7 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
 
   return (
     <MapContainer center={center} zoom={zoom} className="h-full w-full" scrollWheelZoom>
+      <FitBounds points={boundsPoints} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
