@@ -32,6 +32,7 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
       difficolta={hike.difficolta}
       descrizione={hike.descrizione}
       coordinate={hike.coordinate}
+      imageUrl={hike.imageUrl ?? ''}
       stats={[
         { label: 'Difficoltà', value: hike.difficolta },
         { label: 'Dislivello', value: hike.dislivello },
