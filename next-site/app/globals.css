@@ -45,6 +45,11 @@ body {
   background: transparent !important;
 }
 
+/* Leaflet overrides link color inside popups — force our styles */
+.leaflet-popup-content a[style] {
+  color: inherit !important;
+}
+
 /* ── Leaflet map tile minimal style ── */
 .leaflet-container {
   font-family: var(--font-geist-sans), system-ui, sans-serif;

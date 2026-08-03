@@ -17,13 +17,14 @@ const heroItem = {
 }
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 36 },
+  hidden: { opacity: 0, y: 28, filter: 'blur(6px)' },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease, delay: i * 0.045 },
+    filter: 'blur(0px)',
+    transition: { duration: 0.65, ease, delay: i * 0.05 },
   }),
-  exit: { opacity: 0, scale: 0.94, transition: { duration: 0.18 } },
+  exit: { opacity: 0, scale: 0.94, filter: 'blur(4px)', transition: { duration: 0.18 } },
 }
 
 export default function HomeClient({ hikes }: { hikes: Hike[] }) {
