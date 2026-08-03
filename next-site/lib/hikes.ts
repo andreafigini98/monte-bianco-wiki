@@ -70,6 +70,7 @@ function extractTitle(content: string): string {
   return match?.[1]?.trim() ?? ''
 }
 
+// ponytail: module-level cache, correct for SSG (single build process); drop if switching to ISR/dynamic routes
 let _cache: Hike[] | null = null
 
 export function getAllHikes(): Hike[] {

@@ -65,7 +65,7 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
         </tbody>
       </table>
 
-      {!isNaN(lat) && !isNaN(lng) && (
+      {hike.coordinate && !isNaN(lat) && !isNaN(lng) && (
         <div className="h-64 rounded-xl overflow-hidden border border-slate-200">
           <MapWrapper
             hikes={[{ slug: hike.slug, title: hike.title, coordinate: hike.coordinate, difficultyLevel: hike.difficultyLevel }]}
