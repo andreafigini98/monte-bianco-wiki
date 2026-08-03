@@ -22,7 +22,7 @@ export default async function HikePage({ params }: { params: Promise<{ slug: str
   if (!hike) notFound()
 
   const processed = await remark().use(remarkGfm).use(remarkHtml, { sanitize: false }).process(hike.content)
-  const contentHtml = processed.toString().replace(/<p>\s*<img[^>]*>\s*<\/p>/gi, '')
+  const contentHtml = processed.toString().replace(/<p>\s*(?:<a[^>]*>)?\s*<img[^>]*>\s*(?:<\/a>)?\s*<\/p>/gi, '')
 
   return (
     <HikePageContent
