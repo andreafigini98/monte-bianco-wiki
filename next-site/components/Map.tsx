@@ -78,19 +78,20 @@ function mapsUrl(lat: number, lng: number) {
   return `https://www.google.com/maps/dir/?api=1&origin=${CAMP.lat},${CAMP.lng}&destination=${lat},${lng}&travelmode=driving`
 }
 
-type Props = { hikes: MapHike[]; zoom?: number; center?: [number, number] }
+type Props = { hikes: MapHike[]; zoom?: number; center?: [number, number]; trailRoute?: [number, number][] }
 
-export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) {
+export default function Map({ hikes, zoom = 9, center = [45.73, 7.35], trailRoute }: Props) {
   const [route, setRoute] = useState<[number, number][]>([])
   const [loadingSlug, setLoadingSlug] = useState<string | null>(null)
 
   const boundsPoints = useMemo<[number, number][]>(() => {
+    if (trailRoute && trailRoute.length > 1) return trailRoute
     if (hikes.length !== 1) return []
     const [lat, lng] = hikes[0].coordinate.split(',').map(Number)
     if (isNaN(lat) || isNaN(lng)) return []
     if (route.length > 0) return route
     return [[CAMP.lat, CAMP.lng], [lat, lng]]
-  }, [hikes, route])
+  }, [hikes, route, trailRoute])
 
   useEffect(() => {
     if (hikes.length !== 1) return
@@ -128,7 +129,15 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35] }: Props) 
         </Popup>
       </Marker>
 
-      {/* Route polyline */}
+      {/* Komoot trail route */}
+      {trailRoute && trailRoute.length > 1 && (
+        <Polyline
+          positions={trailRoute}
+          pathOptions={{ color: '#10b981', weight: 3, opacity: 0.85 }}
+        />
+      )}
+
+      {/* Driving route from campground */}
       {route.length > 0 && (
         <Polyline
           positions={route}

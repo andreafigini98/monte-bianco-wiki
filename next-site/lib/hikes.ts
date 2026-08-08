@@ -11,6 +11,7 @@ export type Hike = {
   slug: string
   href: string
   waypoints?: Waypoint[]
+  route?: [number, number][]
   title: string
   difficolta: string
   difficultyLevel: DifficultyLevel

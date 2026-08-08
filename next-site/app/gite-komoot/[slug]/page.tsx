@@ -45,6 +45,7 @@ export default async function KomootHikePage({ params }: { params: Promise<{ slu
       contentHtml={contentHtml}
       backHref="/gite-komoot"
       backLabel="Gite da Komoot"
+      trailRoute={hike.route}
       extra={<WaypointTrail waypoints={hike.waypoints ?? []} />}
     />
   )

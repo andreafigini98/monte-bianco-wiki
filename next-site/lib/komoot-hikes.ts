@@ -21,6 +21,15 @@ function parseZona(tags: string[]): Zona {
   return 'Altro'
 }
 
+function parseRoute(raw: unknown): [number, number][] | undefined {
+  if (typeof raw !== 'string') return undefined
+  try {
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return undefined
+    return parsed.filter(p => Array.isArray(p) && p.length >= 2)
+  } catch { return undefined }
+}
+
 function parseWaypoints(raw: unknown): Waypoint[] {
   if (!Array.isArray(raw)) return []
   return raw.filter(w => w && typeof w === 'object' && 'name' in w && w.image)
@@ -59,6 +68,7 @@ export function getAllKomootHikes(): Hike[] {
       zona: parseZona(Array.isArray(data.tags) ? data.tags : []),
       imageUrl: data.imageUrl ?? '',
       waypoints: parseWaypoints(data.waypoints),
+      route: parseRoute(data.route),
       content,
     }
   })
