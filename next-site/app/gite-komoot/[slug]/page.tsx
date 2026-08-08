@@ -22,7 +22,8 @@ export default async function KomootHikePage({ params }: { params: Promise<{ slu
   const hike = getKomootHikeBySlug(slug)
   if (!hike) notFound()
 
-  const processed = await remark().use(remarkGfm).use(remarkHtml, { sanitize: false }).process(hike.content)
+  const content = hike.content.replace(/!\[.*?\]\(https?:\/\/[^\)]+\)\n\*Foto:.*\*\n?/g, '')
+  const processed = await remark().use(remarkGfm).use(remarkHtml, { sanitize: false }).process(content)
   const contentHtml = processed.toString()
 
   return (
