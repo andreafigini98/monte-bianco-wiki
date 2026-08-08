@@ -5,6 +5,7 @@ import remarkHtml from 'remark-html'
 import { getAllKomootHikes, getKomootHikeBySlug } from '@/lib/komoot-hikes'
 import HikePageContent from '@/components/HikePageContent'
 import WaypointTrail from '@/components/WaypointTrail'
+import DriveTime from '@/components/DriveTime'
 
 export function generateStaticParams() {
   return getAllKomootHikes().map(h => ({ slug: h.slug }))
@@ -46,6 +47,7 @@ export default async function KomootHikePage({ params }: { params: Promise<{ slu
       backHref="/gite-komoot"
       backLabel="Gite da Komoot"
       trailRoute={hike.route}
+      statsExtra={<DriveTime coordinate={hike.coordinate} />}
       extra={<WaypointTrail waypoints={hike.waypoints ?? []} />}
     />
   )

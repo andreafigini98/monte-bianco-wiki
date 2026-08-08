@@ -37,12 +37,13 @@ type Props = {
   backHref?: string
   backLabel?: string
   extra?: React.ReactNode
+  statsExtra?: React.ReactNode
   trailRoute?: [number, number][]
 }
 
 export default function HikePageContent({
   slug, title, zona, difficultyLevel, descrizione, coordinate, imageUrl, stats, contentHtml,
-  backHref = '/', backLabel = 'Tutte le gite', extra, trailRoute,
+  backHref = '/', backLabel = 'Tutte le gite', extra, statsExtra, trailRoute,
 }: Props) {
   const [lat, lng] = coordinate.split(',').map(Number)
   const hasMap = coordinate && !isNaN(lat) && !isNaN(lng)
@@ -138,6 +139,7 @@ export default function HikePageContent({
               </div>
             ))}
           </div>
+          {statsExtra}
         </motion.div>
 
         {/* Map */}
