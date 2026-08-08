@@ -27,20 +27,18 @@ export default function DriveTime({ coordinate }: { coordinate: string }) {
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`
 
   return (
-    <div className="flex items-center gap-6 pt-4 mt-4 border-t border-stone-100">
-      <div className="space-y-1.5">
-        <p className="text-[10px] uppercase tracking-widest text-stone-400">In auto dal campeggio</p>
-        <p className="text-sm font-semibold text-stone-900 leading-snug">
-          {duration ?? <span className="text-stone-300">—</span>}
-        </p>
-      </div>
+    <div className="space-y-1.5">
+      <p className="text-[10px] uppercase tracking-widest text-stone-400">In auto</p>
+      <p className="text-sm font-semibold text-stone-900 leading-snug">
+        {duration ?? <span className="text-stone-300">—</span>}
+      </p>
       <a
         href={mapsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="ml-auto shrink-0 text-[11px] font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg bg-stone-900 text-white hover:bg-stone-700 transition-colors"
+        className="inline-block text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors border-b border-stone-200 hover:border-stone-500 leading-tight"
       >
-        Naviga →
+        Naviga ↗
       </a>
     </div>
   )

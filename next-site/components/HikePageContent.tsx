@@ -138,8 +138,8 @@ export default function HikePageContent({
                 <p className="text-sm font-semibold text-stone-900 leading-snug">{value}</p>
               </div>
             ))}
+            {statsExtra}
           </div>
-          {statsExtra}
         </motion.div>
 
         {/* Map */}
