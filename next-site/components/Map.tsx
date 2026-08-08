@@ -18,6 +18,8 @@ export type MapHike = {
   title: string
   coordinate: string
   difficultyLevel: string
+  href?: string
+  route?: [number, number][]
 }
 
 const CAMP = { lat: 45.7168, lng: 7.2619 }
@@ -86,6 +88,9 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35], trailRout
 
   const boundsPoints = useMemo<[number, number][]>(() => {
     if (trailRoute && trailRoute.length > 1) return trailRoute
+    // multi-hike overview: fit all routes
+    const allRoutePoints = hikes.flatMap(h => h.route ?? [])
+    if (allRoutePoints.length > 1) return allRoutePoints
     if (hikes.length !== 1) return []
     const [lat, lng] = hikes[0].coordinate.split(',').map(Number)
     if (isNaN(lat) || isNaN(lng)) return []
@@ -129,7 +134,16 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35], trailRout
         </Popup>
       </Marker>
 
-      {/* Komoot trail route */}
+      {/* Per-hike GPS routes (mappa overview) */}
+      {hikes.map(h => h.route && h.route.length > 1 && (
+        <Polyline
+          key={`route-${h.slug}`}
+          positions={h.route}
+          pathOptions={{ color: DIFFICULTY_COLOR[h.difficultyLevel] ?? '#78716c', weight: 2.5, opacity: 0.75 }}
+        />
+      ))}
+
+      {/* Single trail route (detail page) */}
       {trailRoute && trailRoute.length > 1 && (
         <Polyline
           positions={trailRoute}
@@ -200,7 +214,7 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35], trailRout
                     Naviga da campeggio
                   </a>
                   <a
-                    href={`/gite/${h.slug}`}
+                    href={h.href ?? `/gite/${h.slug}`}
                     style={{
                       display: 'block',
                       textAlign: 'center',
