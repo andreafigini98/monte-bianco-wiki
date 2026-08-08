@@ -19,11 +19,11 @@ marcia: scambia i giorni in base al meteo e tieni un "giorno jolly".
 |---|---|---|
 | 1 (arrivo) | [[Rifugio Champillon da Valpelline]] | ambientamento, la gita più vicina dopo Cogne |
 | 2 | [[Rifugio Vittorio Sella e Valnontey]] | il classico di Cogne, stambecchi quasi garantiti |
-| 3 | [[Rifugio Benevolo]] o [[Rifugio Vittorio Emanuele II da Pont]] | altre due valli del Gran Paradiso |
+| 3 | [[Rifugio Vittorio Emanuele II da Pont]] | altra valle del Gran Paradiso |
 | 4 | [[Cascate di Lillaz]] | giornata di recupero, passeggiata breve |
 | 5 | [[Rifugio Bertone da Villair Superiore]] | prima uscita seria verso il Monte Bianco |
 | 6 | [[Rifugio Walter Bonatti da Lavachey]] | balconata classica della Val Ferret |
-| 7 (jolly) | [[Rifugio Elisabetta e Lago Combal]] o [[Lago del Miage da Purtud]] | Val Veny, ghiacciai del versante sud |
+| 7 (jolly) | [[Rifugio Elisabetta e Lago Combal]] | Val Veny, ghiacciai del versante sud |
 
 ## Settimana 2 — Cervino, Monte Rosa e dintorni
 

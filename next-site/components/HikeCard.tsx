@@ -11,7 +11,7 @@ const DIFF_COLOR: Record<DifficultyLevel, string> = {
 
 export default function HikeCard({ hike }: { hike: Hike }) {
   return (
-    <Link href={`/gite/${hike.slug}`} className="group block">
+    <Link href={hike.href} className="group block">
 
       {/* Image */}
       <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-5 rounded-lg">

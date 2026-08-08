@@ -33,10 +33,13 @@ type Props = {
   imageUrl: string
   stats: Stat[]
   contentHtml: string
+  backHref?: string
+  backLabel?: string
 }
 
 export default function HikePageContent({
   slug, title, zona, difficultyLevel, descrizione, coordinate, imageUrl, stats, contentHtml,
+  backHref = '/', backLabel = 'Tutte le gite',
 }: Props) {
   const [lat, lng] = coordinate.split(',').map(Number)
   const hasMap = coordinate && !isNaN(lat) && !isNaN(lng)
@@ -69,10 +72,10 @@ export default function HikePageContent({
         {/* Back link */}
         <motion.div className="absolute top-6 left-6 md:left-12" {...fadeUp(0.1)}>
           <Link
-            href="/"
+            href={backHref}
             className="text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
           >
-            ← Tutte le gite
+            ← {backLabel}
           </Link>
         </motion.div>
 

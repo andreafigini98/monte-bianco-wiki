@@ -55,7 +55,7 @@ Paradiso (4.061 m), qui solo citata come riferimento, non trattata come gita gio
 - Buone probabilità di avvistare stambecchi e camosci lungo il percorso, specie nelle ore mattutine.
 - Il rifugio è un punto di appoggio classico per alpinisti diretti alla vetta del Gran Paradiso: in stagione si
   incontrano spesso cordate in partenza o rientro.
-- Da abbinare, in giorni diversi, alle altre valli del Gran Paradiso già coperte in questo vault ([[Rifugio Vittorio Sella e Valnontey]], [[Rifugio Benevolo]]).
+- Da abbinare, in giorni diversi, alle altre valli del Gran Paradiso già coperte in questo vault ([[Rifugio Vittorio Sella e Valnontey]]).
 
 ## Fonti
 

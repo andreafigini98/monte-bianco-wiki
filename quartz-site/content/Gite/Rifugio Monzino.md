@@ -56,7 +56,7 @@ italiano del Monte Bianco.
 - Da riservare a chi ha già esperienza di vie ferrate: è la gita più tecnica di questo gruppo di 15.
 - Nelle giornate serene la vista sull'Aiguille Noire de Peuterey e sul Monte Bianco è tra le più belle raggiungibili
   in Val Veny.
-- In alternativa più semplice nella stessa valle, vedi [[Rifugio Elisabetta e Lago Combal]] o [[Lago del Miage da Purtud]], senza tratti attrezzati.
+- In alternativa più semplice nella stessa valle, vedi [[Rifugio Elisabetta e Lago Combal]], senza tratti attrezzati.
 
 ## Fonti
 

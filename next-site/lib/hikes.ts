@@ -7,6 +7,7 @@ export type Zona = 'Gran Paradiso' | 'Monte Bianco' | 'Cervino' | 'Monte Rosa' |
 
 export type Hike = {
   slug: string
+  href: string
   title: string
   difficolta: string
   difficultyLevel: DifficultyLevel
@@ -45,9 +46,14 @@ function parseDifficulty(raw: string): DifficultyLevel {
   return 'facile'
 }
 
-const ZONE_TAG_MAP: Record<string, Zona> = {
+export const ZONE_TAG_MAP: Record<string, Zona> = {
   'gran-paradiso': 'Gran Paradiso',
+  'cogne': 'Gran Paradiso',
   'monte-bianco': 'Monte Bianco',
+  'val-ferret': 'Monte Bianco',
+  'val-veny': 'Monte Bianco',
+  'courmayeur': 'Monte Bianco',
+  'la-thuile': 'Monte Bianco',
   'cervino': 'Cervino',
   'monte-rosa': 'Monte Rosa',
   'valpelline': 'Valpelline',
@@ -81,8 +87,10 @@ export function getAllHikes(): Hike[] {
     const raw = fs.readFileSync(path.join(GITE_DIR, filename), 'utf-8')
     const { data, content } = matter(raw)
 
+    const slug = toSlug(filename)
     return {
-      slug: toSlug(filename),
+      slug,
+      href: `/gite/${slug}`,
       title: extractTitle(content),
       difficolta: data.difficolta ?? '',
       difficultyLevel: parseDifficulty(data.difficolta ?? ''),

@@ -32,9 +32,7 @@ Paradiso** (Cogne, Valsavarenche, Val di Rhêmes, Champorcher), il **Cervino** (
 - [[Cascate di Lillaz]] — ~120 m · ~2 km (anello) · ~1 ora · auto ~30 min
 - [[Lago d'Arpy e Testa d'Arpy]] — ~130 m · ~3 km (a/r) · ~1 ora · auto ~42 min
 - [[Lago Blu]] — ~20 m · ~1,5 km (a/r) · ~20 min · auto ~1 ora
-- [[Lago del Miage da Purtud]] — ~300 m · ~8 km (a/r) · ~2h30 · auto ~33 min
 - [[Lago di Place Moulin]] — ~50 m · ~10 km (a/r) · ~2-2h30 · auto ~37 min
-- [[Rifugio Benevolo]] — ~400 m · ~10 km (a/r) · ~3 ore · auto ~35 min
 
 ### Medie
 - [[Rifugio Vittorio Sella e Valnontey]] — ~920 m · ~9 km (a/r) · ~4h30 · auto ~30 min

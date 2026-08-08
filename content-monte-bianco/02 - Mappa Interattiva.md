@@ -27,9 +27,7 @@ In alternativa, dentro Obsidian puoi aprire la base **[[Mappa Gite.base|Mappa Gi
 | [[Cascate di Lillaz]] | `45.5941, 7.3901` | 25,6 km — ~30 min |
 | [[Lago di Miserin da Dondena]] | `45.6121, 7.5515` | 77,5 km — ~2 ore *(vedi nota distanza)* |
 | [[Lago di Place Moulin]] | `45.8990, 7.4865` | 30,3 km — ~37 min |
-| [[Rifugio Benevolo]] | `45.5451, 7.1051` | 28,6 km — ~35 min |
 | [[Rifugio Elisabetta e Lago Combal]] | `45.7856, 6.9003` | 37,9 km — ~40 min |
-| [[Lago del Miage da Purtud]] | `45.8073, 6.9317` | 34,1 km — ~33 min |
 | [[Rifugio Monzino]] | `45.7856, 6.9003` | 37,9 km — ~40 min |
 | [[Rifugio Walter Bonatti da Lavachey]] | `45.8499, 7.0216` | 39,8 km — ~45 min |
 | [[Rifugio Vittorio Emanuele II da Pont]] | `45.5249, 7.2006` | 31,3 km — ~38 min |
