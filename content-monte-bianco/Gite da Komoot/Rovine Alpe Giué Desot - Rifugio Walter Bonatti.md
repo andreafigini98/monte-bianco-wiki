@@ -6,9 +6,16 @@ tempo: "3h49"
 difficolta: "Moderato"
 coordinate: "45.8624, 7.0374"
 komoot: "https://www.komoot.com/it-it/tour/3182828941"
+imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/np/npjva6hw5lsco3zlknb1xk233uezxhg5-uhi37461338/0?width=768&height=576&crop=true"
+descrizione: "Giro ad anello dalle Rovine dell'Alpe Giué Desot al Rifugio Walter Bonatti: 10,1 km, 420 m di dislivello, moderata."
+
 ---
 
 # Rovine dell'Alpe Giué Desot — Rifugio Walter Bonatti (anello da Glacier du petit Mont Gruettaz)
+
+![Rovine Alpe Giué Desot - Rifugio Walter Bonatti](https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/np/npjva6hw5lsco3zlknb1xk233uezxhg5-uhi37461338/0?width=768&height=576&crop=true)
+*Foto: [Komoot](https://www.komoot.com/it-it/tour/3182828941)*
+
 
 ## Dati tecnici
 

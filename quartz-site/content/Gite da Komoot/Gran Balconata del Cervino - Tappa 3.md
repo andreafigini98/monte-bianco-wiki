@@ -6,9 +6,16 @@ tempo: "4h54"
 difficolta: "Moderato"
 coordinate: "45.9029, 7.6121"
 komoot: "https://www.komoot.com/it-it/tour/3182833009"
+imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/n5/n50kz9cxlanf1xoipu4ff0x3l4q3bvtey-uhi65577373/0?width=768&height=576&crop=true"
+descrizione: "Gran Balconata del Cervino — Tappa 3: 11,4 km, 740 m di dislivello, moderata."
+
 ---
 
 # Gran Balconata del Cervino — Tappa 3
+
+![Gran Balconata del Cervino - Tappa 3](https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/n5/n50kz9cxlanf1xoipu4ff0x3l4q3bvtey-uhi65577373/0?width=768&height=576&crop=true)
+*Foto: [Komoot](https://www.komoot.com/it-it/tour/3182833009)*
+
 
 ## Dati tecnici
 

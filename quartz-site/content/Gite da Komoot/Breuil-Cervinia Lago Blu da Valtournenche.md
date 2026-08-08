@@ -6,9 +6,16 @@ tempo: "2h33"
 difficolta: "Moderato"
 coordinate: "45.9094, 7.6152"
 komoot: "https://www.komoot.com/it-it/tour/3182835993"
+imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/1n/1npkqimfnxzpdt04zma80yzuy53j19h4q-uhi77501619/0?width=768&height=576&crop=true"
+descrizione: "Giro ad anello da Valtournenche fino al Villaggio di Breuil-Cervinia e al Lago Blu: 8,71 km, 190 m di dislivello, moderata."
+
 ---
 
 # Villaggio di Breuil-Cervinia — Lago Blu, giro ad anello da Valtournenche
+
+![Breuil-Cervinia Lago Blu da Valtournenche](https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/1n/1npkqimfnxzpdt04zma80yzuy53j19h4q-uhi77501619/0?width=768&height=576&crop=true)
+*Foto: [Komoot](https://www.komoot.com/it-it/tour/3182835993)*
+
 
 ## Dati tecnici
 

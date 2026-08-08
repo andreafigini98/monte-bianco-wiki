@@ -51,7 +51,7 @@ export function getAllKomootHikes(): Hike[] {
       descrizione: data.descrizione ?? '',
       tags: Array.isArray(data.tags) ? data.tags : [],
       zona: parseZona(Array.isArray(data.tags) ? data.tags : []),
-      imageUrl: '',
+      imageUrl: data.imageUrl ?? '',
       content,
     }
   })
