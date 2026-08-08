@@ -155,9 +155,6 @@ export default function HikePageContent({
           </motion.div>
         )}
 
-        {/* Extra content (e.g. waypoints) */}
-        {extra}
-
         {/* Markdown body */}
         <motion.article
           className="prose prose-stone max-w-none"
@@ -166,6 +163,9 @@ export default function HikePageContent({
           transition={{ duration: 0.7, ease, delay: 0.55 }}
           dangerouslySetInnerHTML={{ __html: contentHtml }}
         />
+
+        {/* Extra content (e.g. waypoints) — bottom of page */}
+        {extra}
       </div>
     </main>
   )
