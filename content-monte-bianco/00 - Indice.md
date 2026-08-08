@@ -40,7 +40,6 @@ Paradiso** (Cogne, Valsavarenche, Val di Rhêmes, Champorcher), il **Cervino** (
 - [[Rifugio Elisabetta e Lago Combal]] — ~550 m · ~12 km (a/r) · ~4 ore · auto ~40 min
 - [[Rifugio e Lago Gabiet]] — ~730 m · ~10 km (a/r) · ~4-5 ore · auto ~1h30
 - [[Rifugio Vittorio Emanuele II da Pont]] — ~780 m · ~10 km (a/r) · ~4 ore · auto ~38 min
-- [[Lago di Miserin da Dondena]] — ~470 m · ~9 km (a/r) · ~3 ore · auto ~2 ore
 - [[Rifugio Bertone da Villair Superiore]] — ~670 m · ~9 km (a/r) · ~4 ore · auto ~29 min
 - [[Rifugio Ferraro da Saint-Jacques]] — ~500 m · ~7 km (a/r) · ~2h30-3 ore · auto ~1h10
 - [[Rifugio Champillon da Valpelline]] — ~630 m · ~7 km (a/r) · ~2h30 · auto ~23 min
@@ -56,7 +55,7 @@ Paradiso** (Cogne, Valsavarenche, Val di Rhêmes, Champorcher), il **Cervino** (
 ## 🗓️ Note sulla pianificazione
 - Sarre è una base centrale: si può alternare Gran Paradiso (Cogne, Valsavarenche, Val di Rhêmes, Champorcher),
   Monte Bianco (Courmayeur, La Thuile), Cervino (Cervinia) e Monte Rosa (Gressoney, Val d'Ayas) senza mai superare
-  1h30 d'auto, tranne Champorcher/Miserin (~2 ore).
+  1h30 d'auto.
 - Saint-Jacques (Val d'Ayas) è punto di partenza per tre gite diverse ([[Rifugio Grand Tournalin da Saint-Jacques]], [[Colle Bettaforca da Saint-Jacques]], [[Rifugio Ferraro da Saint-Jacques]]): comodo alternarle restando nella stessa base logistica per un giorno o due.
 - [[Rifugio Champillon da Valpelline]] è la gita più vicina al campeggio dopo quelle di Cogne: buona opzione per il primo o l'ultimo giorno.
 - [[Rifugio Monzino]] è l'unica gita con tratti attrezzati (EEA): da riservare a chi ha esperienza di ferrate.

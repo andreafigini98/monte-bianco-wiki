@@ -11,8 +11,7 @@ marcia: scambia i giorni in base al meteo e tieni un "giorno jolly".
 > - Giorno impegnativo seguito da giorno facile.
 > - Le zone (Cogne/Gran Paradiso, Courmayeur, Cervinia, Val d'Ayas/Gressoney) sono raggruppate per limitare la guida.
 > - Le gite più vicine (Champillon, Cogne) sono il piano B per il meteo incerto.
-> - [[Lago di Miserin da Dondena]], la più lontana (~2 ore), è una giornata dedicata a sé.
-
+> 
 ## Settimana 1 — Gran Paradiso e Monte Bianco
 
 | Giorno | Gita | Note |
@@ -35,7 +34,7 @@ marcia: scambia i giorni in base al meteo e tieni un "giorno jolly".
 | 4 | [[Lago d'Arpy e Testa d'Arpy]] | recupero, passeggiata breve verso La Thuile |
 | 5 | [[Rifugio Grand Tournalin da Saint-Jacques]] o [[Colle Bettaforca da Saint-Jacques]] | Val d'Ayas, giornata dedicata |
 | 6 | [[Rifugio e Lago Gabiet]] | la più lontana verso il Monte Rosa (~1h30) |
-| 7 (jolly) | [[Lago di Place Moulin]] o [[Lago di Miserin da Dondena]] | recupero facile o giornata dedicata a Champorcher |
+| 7 (jolly) | [[Lago di Place Moulin]] | recupero facile |
 
 ## Giornate dedicate (se restano giorni)
 - [[Rifugio Monzino]] — unica gita con tratti attrezzati (EEA), solo per chi ha esperienza di ferrate

@@ -25,7 +25,6 @@ In alternativa, dentro Obsidian puoi aprire la base **[[Mappa Gite.base|Mappa Gi
 | [[Rifugio Bertone da Villair Superiore]] | `45.7994, 6.9789` | 30,4 km — ~29 min |
 | [[Rifugio Vittorio Sella e Valnontey]] | `45.5867, 7.3412` | 24,8 km — ~30 min |
 | [[Cascate di Lillaz]] | `45.5941, 7.3901` | 25,6 km — ~30 min |
-| [[Lago di Miserin da Dondena]] | `45.6121, 7.5515` | 77,5 km — ~2 ore *(vedi nota distanza)* |
 | [[Lago di Place Moulin]] | `45.8990, 7.4865` | 30,3 km — ~37 min |
 | [[Rifugio Elisabetta e Lago Combal]] | `45.7856, 6.9003` | 37,9 km — ~40 min |
 | [[Rifugio Monzino]] | `45.7856, 6.9003` | 37,9 km — ~40 min |
@@ -40,6 +39,3 @@ In alternativa, dentro Obsidian puoi aprire la base **[[Mappa Gite.base|Mappa Gi
 | [[Colle Bettaforca da Saint-Jacques]] | `45.8628, 7.7309` | 76,5 km — ~1h10 |
 | [[Rifugio Ferraro da Saint-Jacques]] | `45.8628, 7.7309` | 76,5 km — ~1h10 |
 | [[Rifugio e Lago Gabiet]] | `45.8569, 7.8155` | 96,7 km — ~1h30 |
-
-*Nota distanza Miserin*: 2 ore è il tempo reale via SS26 fino a Hône e risalita della Valle di Champorcher; è la
-gita più lontana in auto di tutto il vault, da trattare come giornata dedicata.
