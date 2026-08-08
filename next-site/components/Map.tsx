@@ -77,7 +77,51 @@ async function fetchOsrmRoute(toLat: number, toLng: number): Promise<[number, nu
 }
 
 function mapsUrl(lat: number, lng: number) {
-  return `https://www.google.com/maps/dir/?api=1&origin=${CAMP.lat},${CAMP.lng}&destination=${lat},${lng}&travelmode=driving`
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`
+}
+
+function hikePopup(h: MapHike, lat: number, lng: number, diffColor: string) {
+  return (
+    <div style={{ padding: '14px 16px', fontFamily: 'inherit', minWidth: 200 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+        <span style={{ width: 7, height: 7, borderRadius: '50%', background: diffColor, display: 'inline-block', flexShrink: 0 }} />
+        <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.09em', color: '#a8a29e' }}>
+          {DIFFICULTY_LABEL[h.difficultyLevel] ?? h.difficultyLevel}
+        </span>
+      </div>
+      <p style={{ fontSize: '14px', fontWeight: 700, color: '#1c1917', lineHeight: 1.3, marginBottom: 12 }}>
+        {h.title}
+      </p>
+      <div style={{ height: 1, background: '#f5f5f4', marginBottom: 12 }} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <a
+          href={mapsUrl(lat, lng)}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'block', textAlign: 'center',
+            fontSize: '11px', fontWeight: 700,
+            letterSpacing: '0.08em', textTransform: 'uppercase',
+            color: '#1c1917', background: '#f5f5f4',
+            padding: '9px 12px', borderRadius: 6, textDecoration: 'none',
+            border: '1.5px solid #e7e5e4',
+          }}
+        >
+          Naviga →
+        </a>
+        <a
+          href={h.href ?? `/gite/${h.slug}`}
+          style={{
+            display: 'block', textAlign: 'center',
+            fontSize: '11px', letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: '#78716c', textDecoration: 'none',
+          }}
+        >
+          Vedi scheda →
+        </a>
+      </div>
+    </div>
+  )
 }
 
 type Props = { hikes: MapHike[]; zoom?: number; center?: [number, number]; trailRoute?: [number, number][] }
@@ -134,14 +178,22 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35], trailRout
         </Popup>
       </Marker>
 
-      {/* Per-hike GPS routes (mappa overview) */}
-      {hikes.map(h => h.route && h.route.length > 1 && (
-        <Polyline
-          key={`route-${h.slug}`}
-          positions={h.route}
-          pathOptions={{ color: DIFFICULTY_COLOR[h.difficultyLevel] ?? '#78716c', weight: 2.5, opacity: 0.75 }}
-        />
-      ))}
+      {/* Per-hike GPS routes — clickable to open popup */}
+      {hikes.map(h => {
+        if (!h.route || h.route.length < 2) return null
+        const [lat, lng] = h.coordinate.split(',').map(Number)
+        const diffColor = DIFFICULTY_COLOR[h.difficultyLevel] ?? '#78716c'
+        const popup = hikePopup(h, lat, lng, diffColor)
+        return (
+          <Polyline
+            key={`route-${h.slug}`}
+            positions={h.route}
+            pathOptions={{ color: diffColor, weight: 4, opacity: 0.8 }}
+          >
+            <Popup maxWidth={240}>{popup}</Popup>
+          </Polyline>
+        )
+      })}
 
       {/* Single trail route (detail page) */}
       {trailRoute && trailRoute.length > 1 && (
@@ -159,13 +211,11 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35], trailRout
         />
       )}
 
-      {/* Hike markers */}
+      {/* Hike start markers */}
       {hikes.map(h => {
         const [lat, lng] = h.coordinate.split(',').map(Number)
         if (isNaN(lat) || isNaN(lng)) return null
-        const isLoading = loadingSlug === h.slug
         const diffColor = DIFFICULTY_COLOR[h.difficultyLevel] ?? '#78716c'
-
         return (
           <Marker
             key={h.slug}
@@ -173,63 +223,7 @@ export default function Map({ hikes, zoom = 9, center = [45.73, 7.35], trailRout
             icon={coloredIcon(h.difficultyLevel)}
             eventHandlers={{ click: () => handleMarkerClick(h) }}
           >
-            <Popup maxWidth={220}>
-              <div style={{ padding: '14px 16px 14px', fontFamily: 'inherit' }}>
-                {/* Difficulty dot + label */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: diffColor, display: 'inline-block', flexShrink: 0 }} />
-                  <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.09em', color: '#a8a29e' }}>
-                    {DIFFICULTY_LABEL[h.difficultyLevel] ?? h.difficultyLevel}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <p style={{ fontSize: '14px', fontWeight: 700, color: '#1c1917', lineHeight: 1.3, marginBottom: 12 }}>
-                  {h.title}
-                </p>
-
-                {/* Divider */}
-                <div style={{ height: 1, background: '#f5f5f4', marginBottom: 12 }} />
-
-                {/* Actions */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <a
-                    href={mapsUrl(lat, lng)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'block',
-                      textAlign: 'center',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase',
-                      color: 'white',
-                      background: '#1c1917',
-                      padding: '8px 12px',
-                      borderRadius: 3,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Naviga da campeggio
-                  </a>
-                  <a
-                    href={h.href ?? `/gite/${h.slug}`}
-                    style={{
-                      display: 'block',
-                      textAlign: 'center',
-                      fontSize: '11px',
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase',
-                      color: isLoading ? '#a8a29e' : '#78716c',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    {isLoading ? 'Caricamento percorso…' : 'Vedi scheda →'}
-                  </a>
-                </div>
-              </div>
-            </Popup>
+            <Popup maxWidth={240}>{hikePopup(h, lat, lng, diffColor)}</Popup>
           </Marker>
         )
       })}
