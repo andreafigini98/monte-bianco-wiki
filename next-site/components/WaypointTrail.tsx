@@ -24,13 +24,14 @@ export default function WaypointTrail({ waypoints }: { waypoints: Waypoint[] }) 
         {points.map((wp, i) => (
           <div key={i} className="flex gap-5 items-stretch">
 
-            {/* Left column: dot + dashed line */}
-            <div className="flex flex-col items-center w-4 flex-shrink-0 pt-1">
+            {/* Left column: dot centered on image (h-14=56px → 28px offset) + dashed line */}
+            <div className="flex flex-col items-center w-4 flex-shrink-0">
+              <div className="h-7 flex-shrink-0" /> {/* 28px = half of image height */}
               <div className="w-2 h-2 rounded-full bg-stone-300 flex-shrink-0" />
               {i < points.length - 1 && (
                 <div
-                  className="w-px flex-1 mt-2"
-                  style={{ borderLeft: '1.5px dashed #d6d3d1', minHeight: '3rem' }}
+                  className="w-px flex-1 mt-1.5"
+                  style={{ borderLeft: '1.5px dashed #d6d3d1' }}
                 />
               )}
             </div>
