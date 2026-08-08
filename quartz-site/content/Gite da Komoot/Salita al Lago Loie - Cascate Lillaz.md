@@ -12,9 +12,9 @@ descrizione: "Giro ad anello da Lillaz (Cogne) con salita al Lago Loie passando 
 waypoints:
   - name: "Primo salto delle Cascate di Lillaz"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k3/18/184la6twlkt5higppl6axpp4x30ryfh1i-uhi6477867/0?width=512&height=384&crop=true"
-  - name: "Bella salita all\'Alpe di Loië"
+  - name: "Bella salita all'Alpe di Loië"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/im/imph76jjmsfk2doy3mdrgaca3kyvf3ab-uhi26262749/0?width=512&height=384&crop=true"
-  - name: "Rovine dell\'Alpe Loie e Vista Panoramica"
+  - name: "Rovine dell'Alpe Loie e Vista Panoramica"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/uq/uq0pekv9pyxj10l2n5o4znik553epw3md-uhi77343234/0?width=512&height=384&crop=true"
   - name: "Lago Loie"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/6w/6w7h8svhb73p1s2my0if8b3ew53eq84xd-uhi77344014/0?width=512&height=384&crop=true"

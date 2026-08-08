@@ -10,9 +10,9 @@ imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/39/39rj71xypp1kj0be
 descrizione: "Escursione al Lago Arpy e alla Punta della Croce: 11,6 km, 500 m di dislivello, moderata."
 
 waypoints:
-  - name: "Sentiero per il Lago d\'Arpy"
+  - name: "Sentiero per il Lago d'Arpy"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/ok/okdhpi4doo63n0sgg45nfa3g3y2qd6qt-uhi43242966/0?width=512&height=384&crop=true"
-  - name: "Lago d\'Arpy"
+  - name: "Lago d'Arpy"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/39/39rj71xypp1kj0be08avj9h3jb821ka-uhi24011902/0?width=512&height=384&crop=true"
   - name: "Vista sul Monte Bianco"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/1l/1liwka7t85ev1kdq2wtlnlkp5517mc23y-uhi74560735/0?width=512&height=384&crop=true"

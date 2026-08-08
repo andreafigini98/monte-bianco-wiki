@@ -10,7 +10,7 @@ imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/np/npjva6hw5lsco3zl
 descrizione: "Giro ad anello dalle Rovine dell'Alpe Giué Desot al Rifugio Walter Bonatti: 10,1 km, 420 m di dislivello, moderata."
 
 waypoints:
-  - name: "Rovine dell\'Alpe Giué Desot"
+  - name: "Rovine dell'Alpe Giué Desot"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/o2/o2o5l249htzd3j1r2onv3vdv3g0ruv92-uhi17482438/0?width=512&height=384&crop=true"
   - name: "Ponte sul Torrente de Malatrà"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/ee/eevlqpg2u2yy1r612e1hc7u9r3g0rssm3-uhi17482291/0?width=512&height=384&crop=true"

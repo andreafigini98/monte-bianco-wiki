@@ -10,7 +10,7 @@ imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/39/39rj71xypp1kj0be
 descrizione: "Sentiero forestale al Lago d'Arpy via Sentiero 14: 12,2 km, 700 m di dislivello, difficile."
 
 waypoints:
-  - name: "Lago d\'Arpy"
+  - name: "Lago d'Arpy"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/yu/yuvihvn0hfdq1tcm1xjtu1l6u4w34s9fa-uhi69234430/0?width=512&height=384&crop=true"
   - name: "Vista sulla valle"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/1j/1jf25u2l3st9917rms2hp4qbfp538hmm71-uhi77081145/0?width=512&height=384&crop=true"
