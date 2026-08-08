@@ -6,18 +6,20 @@ tags: [monte-bianco, valle-daosta, komoot, indice]
 
 Itinerari pianificati su [Komoot](https://www.komoot.com) da Andrea Figini per il viaggio in Valle d'Aosta.
 
-## 🥾 Le gite (13 itinerari)
+## 🥾 Le gite (12 itinerari)
+
+### Facile
+
+- [[Anello Rifugio Bonatti da Lavachey]] — 400 m · 6,62 km · 2h43
+- [[Breuil-Cervinia Lago Blu da Valtournenche]] — 190 m · 8,71 km · 2h33
+- [[Vista sul Lago di Place Moulin - Diga di Place Moulin]] — 220 m · 8,76 km · 2h39
 
 ### Moderato
 
-- [[Anello Rifugio Bonatti da Lavachey]] — 400 m · 6,62 km · 2h43
-- [[Vista sul Lago di Place Moulin - Diga di Place Moulin]] — 220 m · 8,76 km · 2h39
-- [[Breuil-Cervinia Lago Blu da Valtournenche]] — 190 m · 8,71 km · 2h33
 - [[Vista sul Monte Bianco da Camping Grandes Jorasses]] — 430 m · 9,93 km · 3h50
 - [[Rovine Alpe Giué Desot - Rifugio Walter Bonatti]] — 420 m · 10,1 km · 3h49
 - [[Salita al Rifugio Bertone]] — 590 m · 5,75 km · 3h16
 - [[Lago Arpy e Punta della Croce (3182818311)]] — 500 m · 11,6 km · 4h13
-- [[Lago Arpy e Punta della Croce (3182837675)]] — 500 m · 11,6 km · 4h13
 - [[Salita al Rifugio Elisabetta in Val Veny]] — 580 m · 13,0 km · 4h26
 - [[Gran Balconata del Cervino - Tappa 3]] — 740 m · 11,4 km · 4h54
 

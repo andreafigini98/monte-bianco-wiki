@@ -3,7 +3,7 @@ tags: [gita, komoot, moderato, cervino]
 dislivello: "190 m"
 lunghezza: "8,71 km"
 tempo: "2h33"
-difficolta: "Moderato"
+difficolta: "Facile"
 coordinate: "45.9094, 7.6152"
 komoot: "https://www.komoot.com/it-it/tour/3182835993"
 imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/1n/1npkqimfnxzpdt04zma80yzuy53j19h4q-uhi77501619/0?width=768&height=576&crop=true"
