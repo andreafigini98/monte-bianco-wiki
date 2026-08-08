@@ -9,6 +9,13 @@ komoot: "https://www.komoot.com/it-it/tour/3182818350"
 imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/np/npjva6hw5lsco3zlknb1xk233uezxhg5-uhi37461338/0?width=768&height=576&crop=true"
 descrizione: "Giro ad anello al Rifugio Bonatti con partenza da Lavachey: 6,62 km, 400 m di dislivello, moderata."
 
+waypoints:
+  - name: "Cascata in Val Ferret"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/ps/psnbiqglg7r17m0f1amsdxo13vqvof8w-uhi39674288/0?width=512&height=384&crop=true"
+  - name: "Rifugio Walter Bonatti"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/np/npjva6hw5lsco3zlknb1xk233uezxhg5-uhi37461338/0?width=512&height=384&crop=true"
+  - name: "Rovine dell\'Alpe Giué Desot"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/o2/o2o5l249htzd3j1r2onv3vdv3g0ruv92-uhi17482438/0?width=512&height=384&crop=true"
 ---
 
 # Anello Rifugio Bonatti da Lavachey

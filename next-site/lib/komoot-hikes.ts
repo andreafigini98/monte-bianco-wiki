@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 import { toSlug, ZONE_TAG_MAP } from './hikes'
-import type { Hike, DifficultyLevel, Zona } from './hikes'
+import type { Hike, DifficultyLevel, Zona, Waypoint } from './hikes'
 
 const KOMOOT_DIR = path.join(process.cwd(), '..', 'content-monte-bianco', 'Gite da Komoot')
 
@@ -19,6 +19,12 @@ function parseZona(tags: string[]): Zona {
     if (ZONE_TAG_MAP[tag]) return ZONE_TAG_MAP[tag]
   }
   return 'Altro'
+}
+
+function parseWaypoints(raw: unknown): Waypoint[] {
+  if (!Array.isArray(raw)) return []
+  return raw.filter(w => w && typeof w === 'object' && 'name' in w && w.image)
+    .map(w => ({ name: String(w.name), image: String(w.image) }))
 }
 
 function extractTitle(content: string): string {
@@ -52,6 +58,7 @@ export function getAllKomootHikes(): Hike[] {
       tags: Array.isArray(data.tags) ? data.tags : [],
       zona: parseZona(Array.isArray(data.tags) ? data.tags : []),
       imageUrl: data.imageUrl ?? '',
+      waypoints: parseWaypoints(data.waypoints),
       content,
     }
   })

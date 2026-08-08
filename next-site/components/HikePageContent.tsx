@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -35,11 +36,12 @@ type Props = {
   contentHtml: string
   backHref?: string
   backLabel?: string
+  extra?: React.ReactNode
 }
 
 export default function HikePageContent({
   slug, title, zona, difficultyLevel, descrizione, coordinate, imageUrl, stats, contentHtml,
-  backHref = '/', backLabel = 'Tutte le gite',
+  backHref = '/', backLabel = 'Tutte le gite', extra,
 }: Props) {
   const [lat, lng] = coordinate.split(',').map(Number)
   const hasMap = coordinate && !isNaN(lat) && !isNaN(lng)
@@ -152,6 +154,9 @@ export default function HikePageContent({
             />
           </motion.div>
         )}
+
+        {/* Extra content (e.g. waypoints) */}
+        {extra}
 
         {/* Markdown body */}
         <motion.article

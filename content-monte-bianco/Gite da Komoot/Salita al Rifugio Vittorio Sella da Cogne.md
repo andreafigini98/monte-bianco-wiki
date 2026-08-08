@@ -9,6 +9,13 @@ komoot: "https://www.komoot.com/it-it/tour/3182818449"
 imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/1g/1gdmf63ak5ajnjwjnqr8rs0oz4ps2pbad-uhi65233239/0?width=768&height=576&crop=true"
 descrizione: "Salita al Rifugio Vittorio Sella da Cogne: 11,1 km, 910 m di dislivello, difficile."
 
+waypoints:
+  - name: "Cascata del Grand Loson"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k4/c3/c39jfzkt3najpfr4kcgco68u3j5pb0dy-uhi23772713/0?width=512&height=384&crop=true"
+  - name: "Pascieux: borgo abbandonato"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/1g/1gdmf63ak5ajnjwjnqr8rs0oz4ps2pbad-uhi65233239/0?width=512&height=384&crop=true"
+  - name: "Rifugio Vittorio Sella"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1ka/d1/d18r6hucocc5vf242fafo125nsr2qrb-uhi97706074/0?width=512&height=384&crop=true"
 ---
 
 # Salita al Rifugio Vittorio Sella da Cogne

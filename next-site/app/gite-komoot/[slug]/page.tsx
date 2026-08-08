@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm'
 import remarkHtml from 'remark-html'
 import { getAllKomootHikes, getKomootHikeBySlug } from '@/lib/komoot-hikes'
 import HikePageContent from '@/components/HikePageContent'
+import WaypointTrail from '@/components/WaypointTrail'
 
 export function generateStaticParams() {
   return getAllKomootHikes().map(h => ({ slug: h.slug }))
@@ -33,7 +34,7 @@ export default async function KomootHikePage({ params }: { params: Promise<{ slu
       difficolta={hike.difficolta}
       descrizione={hike.descrizione}
       coordinate={hike.coordinate}
-      imageUrl=""
+      imageUrl={hike.imageUrl}
       stats={[
         { label: 'Difficoltà', value: hike.difficolta },
         { label: 'Dislivello', value: hike.dislivello },
@@ -43,6 +44,7 @@ export default async function KomootHikePage({ params }: { params: Promise<{ slu
       contentHtml={contentHtml}
       backHref="/gite-komoot"
       backLabel="Gite da Komoot"
+      extra={<WaypointTrail waypoints={hike.waypoints ?? []} />}
     />
   )
 }

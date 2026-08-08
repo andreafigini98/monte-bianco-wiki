@@ -5,9 +5,12 @@ import matter from 'gray-matter'
 export type DifficultyLevel = 'facile' | 'media' | 'impegnativa' | 'molto impegnativa'
 export type Zona = 'Gran Paradiso' | 'Monte Bianco' | 'Cervino' | 'Monte Rosa' | 'Valpelline' | 'Altro'
 
+export type Waypoint = { name: string; image: string }
+
 export type Hike = {
   slug: string
   href: string
+  waypoints?: Waypoint[]
   title: string
   difficolta: string
   difficultyLevel: DifficultyLevel

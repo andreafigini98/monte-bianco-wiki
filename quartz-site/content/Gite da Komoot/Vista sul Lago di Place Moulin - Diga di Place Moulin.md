@@ -9,6 +9,19 @@ komoot: "https://www.komoot.com/it-it/tour/3182839695"
 imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/1w/1wysdk2h5mrk9khxg319ovn2o4o9mh6kr-uhi63577235/0?width=768&height=576&crop=true"
 descrizione: "Giro ad anello da Bionaz con vista sul Lago di Place Moulin e sosta alla Diga: 8,76 km, 220 m di dislivello, moderata."
 
+waypoints:
+  - name: "Lago di Place-Moulin"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k8/1n/1n7ggv4ix4ms61remlwsu1ik7952uq9e3p-uhi76608974/0?width=512&height=384&crop=true"
+  - name: "Penisola nel Lago di Place-Moulin"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/l2/l2gtnm8r1wsfnyfx5kf4yrdt4rme8dfs-uhi66973450/0?width=512&height=384&crop=true"
+  - name: "Panorama sul lago di Place Moulin"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/df/dft4aveh9yiu1a8kgnuexsn114losh44o-uhi61038854/0?width=512&height=384&crop=true"
+  - name: "Vista sul Lago di Place Moulin"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/wv/wvpuv3faeugl17tbmizz49m324nj26kfe-uhi62880750/0?width=512&height=384&crop=true"
+  - name: "Diga di Place Moulin"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/1v/1vok7z56w3mhjazdsg6ck2q7p4n91bzsv-uhi62600588/0?width=512&height=384&crop=true"
+  - name: "Cascata vicino al Lago di Place-Moulin"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/15/15ulda0czocl917qd1sgyq10w24oh5v89r-uhi63833260/0?width=512&height=384&crop=true"
 ---
 
 # Vista sul Lago di Place Moulin — Diga di Place Moulin, giro ad anello da Bionaz

@@ -9,6 +9,11 @@ komoot: "https://www.komoot.com/it-it/tour/3182833009"
 imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/n5/n50kz9cxlanf1xoipu4ff0x3l4q3bvtey-uhi65577373/0?width=768&height=576&crop=true"
 descrizione: "Gran Balconata del Cervino — Tappa 3: 11,4 km, 740 m di dislivello, moderata."
 
+waypoints:
+  - name: "Lago di Cignana"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/n5/n50kz9cxlanf1xoipu4ff0x3l4q3bvtey-uhi65577373/0?width=512&height=384&crop=true"
+  - name: "Finestra di Cignana"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k7/2m/2ms63aoabxbd1xfi7zj4yyujz4nrbp7le-uhi63099287/0?width=512&height=384&crop=true"
 ---
 
 # Gran Balconata del Cervino — Tappa 3
