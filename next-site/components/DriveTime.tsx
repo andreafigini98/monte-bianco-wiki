@@ -36,7 +36,7 @@ export default function DriveTime({ coordinate }: { coordinate: string }) {
         href={mapsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors border-b border-stone-200 hover:border-stone-500 leading-tight"
+        className="inline-block text-[10px] uppercase tracking-widest text-stone-600 hover:text-stone-900 transition-colors border-b border-stone-400 hover:border-stone-700 leading-tight font-semibold"
       >
         Naviga ↗
       </a>
