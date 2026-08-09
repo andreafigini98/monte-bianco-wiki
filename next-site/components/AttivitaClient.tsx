@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import type { Attivita, Categoria } from '@/app/attivita/page'
+import type { Attivita, Categoria } from '@/lib/activities'
 
 const ease = [0.22, 1, 0.36, 1] as const
 

@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect, useTransition, useRef, useMemo } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hike, DifficultyLevel } from '@/lib/hikes'
+import type { Attivita } from '@/lib/activities'
 import type { Schedule } from '@/lib/calendario'
 import { persistSchedule } from '@/app/actions/calendario'
 import HikeCard from '@/components/HikeCard'
@@ -34,33 +36,47 @@ const DATES = Array.from({ length: 14 }, (_, i) => ({
 
 type ViewMode = 'griglia' | 'agenda'
 
+// Activities use "act:" prefix in schedule to avoid collisions with hike slugs
+const ACT_PREFIX = 'act:'
+const actKey = (id: string) => `${ACT_PREFIX}${id}`
+const isActKey = (key: string) => key.startsWith(ACT_PREFIX)
+const actId = (key: string) => key.slice(ACT_PREFIX.length)
+
 export default function CalendarioClient({
   hikes,
+  attivita,
   initialSchedule,
 }: {
   hikes: Hike[]
+  attivita: Attivita[]
   initialSchedule: Schedule
 }) {
   const [schedule, setSchedule] = useState<Schedule>(initialSchedule)
   const [dragging, setDragging] = useState<string | null>(null)
   const [over, setOver] = useState<string | null>(null)
-  const [selected, setSelected] = useState<string | null>(null) // tap-to-assign (mobile)
+  const [selected, setSelected] = useState<string | null>(null)
   const [view, setView] = useState<ViewMode>('griglia')
   const [, startTransition] = useTransition()
   const hikeBySlug = useRef(new Map(hikes.map(h => [h.slug, h])))
+  const activityById = useRef(new Map(attivita.map(a => [a.id, a])))
 
   useEffect(() => {
     if (window.matchMedia('(max-width: 639px)').matches) setView('agenda')
   }, [])
 
-  const scheduledSlugs = useMemo(
+  const scheduledKeys = useMemo(
     () => new Set(Object.values(schedule).flat()),
     [schedule],
   )
 
   const availableHikes = useMemo(
-    () => hikes.filter(h => !scheduledSlugs.has(h.slug)),
-    [hikes, scheduledSlugs],
+    () => hikes.filter(h => !scheduledKeys.has(h.slug)),
+    [hikes, scheduledKeys],
+  )
+
+  const availableAttivita = useMemo(
+    () => attivita.filter(a => !scheduledKeys.has(actKey(a.id))),
+    [attivita, scheduledKeys],
   )
 
   function save(next: Schedule) {
@@ -68,20 +84,20 @@ export default function CalendarioClient({
     startTransition(() => persistSchedule(next))
   }
 
-  function assignHike(slug: string, dateKey: string) {
-    save({ ...schedule, [dateKey]: [...(schedule[dateKey] ?? []), slug] })
+  function assign(itemKey: string, dateKey: string) {
+    save({ ...schedule, [dateKey]: [...(schedule[dateKey] ?? []), itemKey] })
   }
 
   function onDrop(dateKey: string) {
     if (!dragging) return
-    assignHike(dragging, dateKey)
+    assign(dragging, dateKey)
     setDragging(null)
     setOver(null)
   }
 
   function onDayClick(dateKey: string) {
     if (!selected) return
-    assignHike(selected, dateKey)
+    assign(selected, dateKey)
     setSelected(null)
   }
 
@@ -91,8 +107,26 @@ export default function CalendarioClient({
     save(next)
   }
 
-  function HikeChip({ slug, dateKey, idx }: { slug: string; dateKey: string; idx: number }) {
-    const h = hikeBySlug.current.get(slug)
+  // Chip inside calendar cell — works for both hikes and activities
+  function ItemChip({ itemKey, dateKey, idx }: { itemKey: string; dateKey: string; idx: number }) {
+    if (isActKey(itemKey)) {
+      const a = activityById.current.get(actId(itemKey))
+      if (!a) return null
+      return (
+        <div className="group flex items-start gap-1">
+          <div className="flex-1 min-w-0 flex items-center gap-1.5 rounded px-1.5 py-1 bg-amber-50">
+            <span className="shrink-0 w-1.5 h-1.5 rounded-full mt-0.5 bg-amber-500" />
+            <span className="text-xs text-stone-700 leading-snug line-clamp-2">{a.title}</span>
+          </div>
+          <button
+            onClick={() => removeFromDay(dateKey, idx)}
+            className="shrink-0 opacity-0 group-hover:opacity-100 text-stone-300 hover:text-stone-600 transition-opacity text-xs leading-none mt-1"
+            aria-label="Rimuovi"
+          >×</button>
+        </div>
+      )
+    }
+    const h = hikeBySlug.current.get(itemKey)
     if (!h) return null
     return (
       <div className="group flex items-start gap-1">
@@ -107,21 +141,51 @@ export default function CalendarioClient({
           onClick={() => removeFromDay(dateKey, idx)}
           className="shrink-0 opacity-0 group-hover:opacity-100 text-stone-300 hover:text-stone-600 transition-opacity text-xs leading-none mt-1"
           aria-label="Rimuovi"
-        >
-          ×
-        </button>
+        >×</button>
       </div>
     )
   }
 
-  const selectedHike = selected ? hikeBySlug.current.get(selected) : null
+  // What the sticky banner shows when an item is selected (mobile tap-to-assign)
+  const selectedLabel = selected
+    ? isActKey(selected)
+      ? activityById.current.get(actId(selected))?.title ?? null
+      : hikeBySlug.current.get(selected)?.title ?? null
+    : null
+
+  function PaletteCard({ itemKey, children }: { itemKey: string; children: React.ReactNode }) {
+    return (
+      <motion.div
+        draggable
+        onDragStart={() => setDragging(itemKey)}
+        onDragEnd={() => setDragging(null)}
+        layout
+        initial={{ opacity: 0, y: 28, filter: 'blur(6px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
+        transition={{ duration: 0.35, ease }}
+        className={`relative cursor-grab active:cursor-grabbing transition-all duration-150 ${
+          dragging === itemKey ? 'opacity-40 scale-95' : ''
+        }`}
+      >
+        <div
+          className="absolute inset-0 z-10 rounded-lg"
+          onClick={() => setSelected(itemKey === selected ? null : itemKey)}
+        />
+        {selected === itemKey && (
+          <div className="absolute inset-0 z-20 rounded-lg ring-2 ring-stone-900 pointer-events-none" />
+        )}
+        {children}
+      </motion.div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-stone-50">
 
-      {/* ── Tap-to-assign banner (mobile) ── */}
+      {/* Tap-to-assign banner */}
       <AnimatePresence>
-        {selected && selectedHike && (
+        {selected && selectedLabel && (
           <motion.div
             initial={{ y: -60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -129,16 +193,10 @@ export default function CalendarioClient({
             transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
             className="sticky top-0 z-50 bg-stone-900 text-white px-4 py-3 flex items-center gap-3 shadow-lg"
           >
-            <span className={`shrink-0 w-2 h-2 rounded-full ${DIFF_DOT[selectedHike.difficultyLevel]}`} />
-            <p className="flex-1 text-sm font-medium truncate">{selectedHike.title}</p>
+            <span className={`shrink-0 w-2 h-2 rounded-full ${isActKey(selected) ? 'bg-amber-400' : 'bg-stone-400'}`} />
+            <p className="flex-1 text-sm font-medium truncate">{selectedLabel}</p>
             <p className="text-xs text-stone-400 shrink-0">Tocca un giorno</p>
-            <button
-              onClick={() => setSelected(null)}
-              className="shrink-0 text-stone-400 hover:text-white transition-colors text-lg leading-none ml-1"
-              aria-label="Annulla selezione"
-            >
-              ×
-            </button>
+            <button onClick={() => setSelected(null)} className="shrink-0 text-stone-400 hover:text-white transition-colors text-lg leading-none ml-1" aria-label="Annulla">×</button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -149,7 +207,7 @@ export default function CalendarioClient({
         <div className="flex items-start justify-between mb-8">
           <div>
             <h1 className="font-serif text-3xl font-bold text-stone-900 mb-1">Agosto 2026</h1>
-            <p className="text-sm text-stone-400">10 – 23 agosto · Trascina o tocca le gite</p>
+            <p className="text-sm text-stone-400">10 – 23 agosto · Trascina o tocca le card</p>
           </div>
           <div className="flex items-center gap-1 rounded-lg border border-stone-200 bg-white p-1 shrink-0">
             {(['griglia', 'agenda'] as ViewMode[]).map(v => (
@@ -161,11 +219,7 @@ export default function CalendarioClient({
                 }`}
               >
                 {view === v && (
-                  <motion.span
-                    layoutId="view-bg"
-                    className="absolute inset-0 bg-stone-100 rounded"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }}
-                  />
+                  <motion.span layoutId="view-bg" className="absolute inset-0 bg-stone-100 rounded" transition={{ type: 'spring', bounce: 0.2, duration: 0.35 }} />
                 )}
                 <span className="relative">{v}</span>
               </button>
@@ -175,23 +229,14 @@ export default function CalendarioClient({
 
         <AnimatePresence mode="wait">
           {view === 'griglia' ? (
-            <motion.div
-              key="griglia"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease }}
-            >
+            <motion.div key="griglia" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25, ease }}>
               <div className="grid grid-cols-7 gap-1 mb-12">
                 {DAYS_IT.map(d => (
-                  <div key={d} className="text-center text-xs font-semibold uppercase tracking-widest text-stone-400 pb-2">
-                    {d}
-                  </div>
+                  <div key={d} className="text-center text-xs font-semibold uppercase tracking-widest text-stone-400 pb-2">{d}</div>
                 ))}
                 {DATES.map(({ key, day }) => {
-                  const slugs = schedule[key] ?? []
+                  const keys = schedule[key] ?? []
                   const isOver = over === key
-                  const isTarget = !!selected // highlight droppable days when a hike is selected
                   return (
                     <div
                       key={key}
@@ -200,18 +245,14 @@ export default function CalendarioClient({
                       onDrop={() => onDrop(key)}
                       onClick={() => onDayClick(key)}
                       className={`min-h-28 rounded-lg border p-2 transition-colors duration-150 ${
-                        isOver
-                          ? 'border-stone-400 bg-stone-100'
-                          : isTarget
-                          ? 'border-stone-300 bg-stone-50 cursor-pointer'
-                          : 'border-stone-200 bg-white'
+                        isOver ? 'border-stone-400 bg-stone-100'
+                        : selected ? 'border-stone-300 bg-stone-50 cursor-pointer'
+                        : 'border-stone-200 bg-white'
                       }`}
                     >
                       <span className="text-xs font-semibold text-stone-400 mb-1 block">{day}</span>
                       <div className="flex flex-col gap-1">
-                        {slugs.map((slug, idx) => (
-                          <HikeChip key={`${slug}-${idx}`} slug={slug} dateKey={key} idx={idx} />
-                        ))}
+                        {keys.map((k, idx) => <ItemChip key={`${k}-${idx}`} itemKey={k} dateKey={key} idx={idx} />)}
                       </div>
                     </div>
                   )
@@ -219,47 +260,56 @@ export default function CalendarioClient({
               </div>
             </motion.div>
           ) : (
-            <motion.div
-              key="agenda"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease }}
-              className="mb-12"
-            >
+            <motion.div key="agenda" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25, ease }} className="mb-12">
               <div className="overflow-y-auto max-h-[60vh] rounded-xl border border-stone-200 bg-white divide-y divide-stone-100">
                 {DATES.filter(({ key }) => (schedule[key] ?? []).length > 0).length === 0 ? (
-                  <p className="text-sm text-stone-400 text-center py-16">
-                    Nessuna gita pianificata — vai in vista griglia e trascina o tocca le card
-                  </p>
+                  <p className="text-sm text-stone-400 text-center py-16">Nessun elemento pianificato — vai in vista griglia e trascina o tocca le card</p>
                 ) : (
                   DATES.map(({ key, day, dow }) => {
-                    const slugs = schedule[key] ?? []
-                    if (slugs.length === 0) return null
+                    const keys = schedule[key] ?? []
+                    if (keys.length === 0) return null
                     return (
                       <div key={key} className="flex gap-4 p-5">
-                        {/* Date column */}
                         <div className="shrink-0 w-14 text-center pt-0.5">
                           <p className="text-xs uppercase tracking-widest text-stone-400">{dow}</p>
                           <p className="font-serif text-3xl font-bold text-stone-900 leading-none">{day}</p>
                           <p className="text-xs text-stone-400">{MONTHS_IT[7]}</p>
                         </div>
-
-                        {/* Hikes */}
                         <div className="flex-1 min-w-0 flex flex-col gap-4">
-                          {slugs.map((slug, idx) => {
-                            const h = hikeBySlug.current.get(slug)
+                          {keys.map((k, idx) => {
+                            if (isActKey(k)) {
+                              const a = activityById.current.get(actId(k))
+                              if (!a) return null
+                              return (
+                                <div key={`${k}-${idx}`} className="group relative">
+                                  {/* Mobile: image card */}
+                                  <div className="sm:hidden">
+                                    <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-3 rounded-lg">
+                                      <Image src={a.imageUrl} alt={a.title} fill className="object-cover" sizes="100vw" />
+                                    </div>
+                                    <p className="font-serif text-lg font-bold text-stone-900">{a.title}</p>
+                                    <p className="text-sm text-stone-400 line-clamp-2 mt-1">{a.descrizione}</p>
+                                  </div>
+                                  {/* Desktop: compact row */}
+                                  <div className="hidden sm:flex items-center gap-3 rounded-lg border border-amber-100 px-4 py-3 hover:border-amber-300 transition-colors">
+                                    <span className="shrink-0 w-2 h-2 rounded-full bg-amber-400" />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-semibold text-stone-800 truncate">{a.title}</p>
+                                      <p className="text-xs text-stone-400 mt-0.5 capitalize">{a.categoria}</p>
+                                    </div>
+                                    <button onClick={() => removeFromDay(key, idx)} className="opacity-0 group-hover:opacity-100 text-stone-300 hover:text-stone-600 transition-opacity text-sm" aria-label="Rimuovi">×</button>
+                                  </div>
+                                  <button onClick={() => removeFromDay(key, idx)} className="sm:hidden absolute top-2 right-2 z-10 bg-white/80 backdrop-blur-sm rounded-full w-6 h-6 flex items-center justify-center text-stone-400 hover:text-stone-700 text-sm shadow" aria-label="Rimuovi">×</button>
+                                </div>
+                              )
+                            }
+                            const h = hikeBySlug.current.get(k)
                             if (!h) return null
                             return (
-                              <div key={`${slug}-${idx}`} className="group relative">
-                                {/* Mobile: full card with image */}
+                              <div key={`${k}-${idx}`} className="group relative">
                                 <div className="sm:hidden">
-                                  <Link href={h.href} className="block">
-                                    <HikeCard hike={h} />
-                                  </Link>
+                                  <Link href={h.href} className="block"><HikeCard hike={h} /></Link>
                                 </div>
-
-                                {/* Desktop: compact row */}
                                 <div className="hidden sm:flex items-center gap-3 rounded-lg border border-stone-100 px-4 py-3 hover:border-stone-300 transition-colors">
                                   <span className={`shrink-0 w-2 h-2 rounded-full ${DIFF_DOT[h.difficultyLevel]}`} />
                                   <Link href={h.href} className="flex-1 min-w-0">
@@ -270,23 +320,9 @@ export default function CalendarioClient({
                                       <span className={`font-medium px-1.5 rounded ${DIFF_BADGE[h.difficultyLevel]}`}>{h.difficultyLevel}</span>
                                     </p>
                                   </Link>
-                                  <button
-                                    onClick={() => removeFromDay(key, idx)}
-                                    className="opacity-0 group-hover:opacity-100 text-stone-300 hover:text-stone-600 transition-opacity text-sm"
-                                    aria-label="Rimuovi"
-                                  >
-                                    ×
-                                  </button>
+                                  <button onClick={() => removeFromDay(key, idx)} className="opacity-0 group-hover:opacity-100 text-stone-300 hover:text-stone-600 transition-opacity text-sm" aria-label="Rimuovi">×</button>
                                 </div>
-
-                                {/* Mobile remove button */}
-                                <button
-                                  onClick={() => removeFromDay(key, idx)}
-                                  className="sm:hidden absolute top-2 right-2 z-10 bg-white/80 backdrop-blur-sm rounded-full w-6 h-6 flex items-center justify-center text-stone-400 hover:text-stone-700 text-sm shadow"
-                                  aria-label="Rimuovi"
-                                >
-                                  ×
-                                </button>
+                                <button onClick={() => removeFromDay(key, idx)} className="sm:hidden absolute top-2 right-2 z-10 bg-white/80 backdrop-blur-sm rounded-full w-6 h-6 flex items-center justify-center text-stone-400 hover:text-stone-700 text-sm shadow" aria-label="Rimuovi">×</button>
                               </div>
                             )
                           })}
@@ -300,54 +336,62 @@ export default function CalendarioClient({
           )}
         </AnimatePresence>
 
-        {/* Hike palette */}
-        <div className="border-t border-stone-100 pt-12">
-          <motion.h2
-            className="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-10"
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, ease }}
-          >
-            {availableHikes.length > 0
-              ? 'Gite disponibili — trascina o tocca per selezionare'
-              : 'Tutte le gite sono nel calendario'}
-          </motion.h2>
+        {/* Palette — Gite */}
+        {(availableHikes.length > 0 || availableAttivita.length > 0) && (
+          <div className="border-t border-stone-100 pt-12 space-y-16">
 
-          {availableHikes.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
-              <AnimatePresence>
-                {availableHikes.map((h, i) => (
-                  <motion.div
-                    key={h.slug}
-                    draggable
-                    onDragStart={() => setDragging(h.slug)}
-                    onDragEnd={() => setDragging(null)}
-                    layout
-                    initial={{ opacity: 0, y: 28, filter: 'blur(6px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
-                    transition={{ duration: 0.35, ease, delay: i * 0.03 }}
-                    className={`relative cursor-grab active:cursor-grabbing transition-all duration-150 ${
-                      dragging === h.slug ? 'opacity-40 scale-95' : ''
-                    }`}
-                  >
-                    {/* Transparent overlay: captures tap for mobile select, doesn't break desktop drag */}
-                    <div
-                      className="absolute inset-0 z-10 rounded-lg"
-                      onClick={() => setSelected(h.slug === selected ? null : h.slug)}
-                    />
-                    {/* Selection ring */}
-                    {selected === h.slug && (
-                      <div className="absolute inset-0 z-20 rounded-lg ring-2 ring-stone-900 pointer-events-none" />
-                    )}
-                    <HikeCard hike={h} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
-        </div>
+            {availableHikes.length > 0 && (
+              <div>
+                <motion.h2 className="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-10" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, ease }}>
+                  Gite — trascina o tocca per selezionare
+                </motion.h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+                  <AnimatePresence>
+                    {availableHikes.map(h => (
+                      <PaletteCard key={h.slug} itemKey={h.slug}>
+                        <HikeCard hike={h} />
+                      </PaletteCard>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+            )}
+
+            {availableAttivita.length > 0 && (
+              <div>
+                <motion.h2 className="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-10" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, ease }}>
+                  Attività — trascina o tocca per selezionare
+                </motion.h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+                  <AnimatePresence>
+                    {availableAttivita.map(a => (
+                      <PaletteCard key={actKey(a.id)} itemKey={actKey(a.id)}>
+                        <div className="group">
+                          <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-5 rounded-lg">
+                            <Image src={a.imageUrl} alt={a.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                            <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/20 transition-colors duration-500" />
+                          </div>
+                          <div>
+                            <span className="text-xs uppercase tracking-widest text-amber-500 mb-2 block">{a.categoria === 'cibo' ? 'Cibo & Aperitivo' : 'Visite & Natura'}</span>
+                            <h3 className="font-serif text-xl font-bold leading-tight text-stone-900 mb-2 group-hover:text-stone-500 transition-colors duration-300">{a.title}</h3>
+                            <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{a.descrizione}</p>
+                          </div>
+                        </div>
+                      </PaletteCard>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {availableHikes.length === 0 && availableAttivita.length === 0 && (
+          <p className="border-t border-stone-100 pt-12 text-sm text-stone-400">
+            Tutte le gite e le attività sono nel calendario.
+          </p>
+        )}
 
       </div>
     </div>
