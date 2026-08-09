@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 
 const links = [
   { href: '/gite-komoot', label: 'Komoot' },
-  { href: '/mappa', label: 'Mappa' },
   { href: '/calendario', label: 'Calendario' },
   { href: '/attivita', label: 'Attività' },
 ]
