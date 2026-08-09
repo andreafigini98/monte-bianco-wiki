@@ -20,7 +20,7 @@ export default function Nav() {
     >
       {/* Row 1 (mobile: title + secret; desktop: title + links + secret in one row) */}
       <div className="flex items-center">
-        <Link href="/" className="font-serif text-xl font-bold text-stone-900 tracking-tight">
+        <Link href="/" className="font-serif text-2xl font-bold text-stone-900 tracking-tight">
           Valle d&apos;Aosta
         </Link>
 
@@ -50,11 +50,11 @@ export default function Nav() {
       </div>
 
       {/* Row 2 (mobile only): nav links */}
-      <div className="md:hidden flex items-center gap-5 mt-5 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="md:hidden flex items-center gap-7 mt-5">
         {links.map(l => (
-          <Link key={l.href} href={l.href} className="relative shrink-0 text-xs uppercase tracking-widest group">
+          <Link key={l.href} href={l.href} className="relative text-sm uppercase tracking-widest group">
             <span className={`transition-colors duration-200 ${
-              pathname === l.href ? 'text-stone-900' : 'text-stone-400'
+              pathname === l.href ? 'text-stone-900 font-semibold' : 'text-stone-400'
             }`}>
               {l.label}
             </span>
