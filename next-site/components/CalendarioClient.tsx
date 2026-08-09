@@ -1,16 +1,13 @@
 'use client'
 import { useState, useTransition, useRef } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import type { Hike, DifficultyLevel } from '@/lib/hikes'
 import type { Schedule } from '@/lib/calendario'
 import { persistSchedule } from '@/app/actions/calendario'
+import HikeCard from '@/components/HikeCard'
 
-const DIFF_BG: Record<DifficultyLevel, string> = {
-  'facile': 'bg-emerald-100 text-emerald-700',
-  'media': 'bg-amber-100 text-amber-700',
-  'impegnativa': 'bg-orange-100 text-orange-700',
-  'molto impegnativa': 'bg-red-100 text-red-700',
-}
+const ease = [0.22, 1, 0.36, 1] as const
 
 const DIFF_DOT: Record<DifficultyLevel, string> = {
   'facile': 'bg-emerald-500',
@@ -115,27 +112,33 @@ export default function CalendarioClient({
         </div>
 
         {/* Hike palette */}
-        <div>
-          <h2 className="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-4">
+        <div className="border-t border-stone-100 pt-12">
+          <motion.h2
+            className="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-10"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, ease }}
+          >
             Gite disponibili — trascina sul calendario
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {hikes.map(h => (
-              <div
+          </motion.h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+            {hikes.map((h, i) => (
+              <motion.div
                 key={h.slug}
                 draggable
                 onDragStart={() => setDragging(h.slug)}
                 onDragEnd={() => setDragging(null)}
-                className={`cursor-grab active:cursor-grabbing select-none flex items-center gap-2 rounded-lg border px-3 py-2 bg-white hover:border-stone-400 transition-all duration-150 ${
-                  dragging === h.slug ? 'opacity-50 scale-95' : 'opacity-100'
+                initial={{ opacity: 0, y: 28, filter: 'blur(6px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.4, ease, delay: i * 0.04 }}
+                className={`cursor-grab active:cursor-grabbing transition-all duration-150 ${
+                  dragging === h.slug ? 'opacity-40 scale-95' : ''
                 }`}
               >
-                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${DIFF_BG[h.difficultyLevel]}`}>
-                  {h.difficultyLevel}
-                </span>
-                <span className="text-sm text-stone-700 font-medium">{h.title}</span>
-                <span className="text-xs text-stone-400">{h.tempo}</span>
-              </div>
+                <HikeCard hike={h} />
+              </motion.div>
             ))}
           </div>
         </div>
