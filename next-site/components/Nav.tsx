@@ -8,6 +8,7 @@ const links = [
   { href: '/gite-komoot', label: 'Komoot' },
   { href: '/mappa', label: 'Mappa' },
   { href: '/calendario', label: 'Calendario' },
+  { href: '/attivita', label: 'Attività' },
 ]
 
 export default function Nav() {
