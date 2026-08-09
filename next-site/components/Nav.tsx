@@ -7,6 +7,7 @@ const links = [
   { href: '/', label: 'Gite' },
   { href: '/gite-komoot', label: 'Komoot' },
   { href: '/mappa', label: 'Mappa' },
+  { href: '/calendario', label: 'Calendario' },
 ]
 
 export default function Nav() {
