@@ -1,5 +1,5 @@
 'use client'
-import { useState, useTransition, useRef, useMemo } from 'react'
+import { useState, useEffect, useTransition, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hike, DifficultyLevel } from '@/lib/hikes'
@@ -48,6 +48,10 @@ export default function CalendarioClient({
   const [view, setView] = useState<ViewMode>('griglia')
   const [, startTransition] = useTransition()
   const hikeBySlug = useRef(new Map(hikes.map(h => [h.slug, h])))
+
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 639px)').matches) setView('agenda')
+  }, [])
 
   const scheduledSlugs = useMemo(
     () => new Set(Object.values(schedule).flat()),
