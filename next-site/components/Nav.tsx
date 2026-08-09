@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 
 const links = [
-  { href: '/gite-komoot', label: 'Komoot' },
+  { href: '/', label: 'Komoot' },
   { href: '/calendario', label: 'Calendario' },
   { href: '/attivita', label: 'Attività' },
 ]
@@ -50,7 +50,7 @@ export default function Nav() {
       </div>
 
       {/* Row 2 (mobile only): nav links */}
-      <div className="md:hidden flex items-center gap-5 mt-3 overflow-x-auto pb-0.5">
+      <div className="md:hidden flex items-center gap-5 mt-5 overflow-x-auto pb-0.5">
         {links.map(l => (
           <Link key={l.href} href={l.href} className="relative shrink-0 text-xs uppercase tracking-widest group">
             <span className={`transition-colors duration-200 ${
