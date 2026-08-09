@@ -5,8 +5,8 @@ import { motion } from 'framer-motion'
 
 const links = [
   { href: '/', label: 'Komoot' },
-  { href: '/calendario', label: 'Calendario' },
   { href: '/attivita', label: 'Attività' },
+  { href: '/calendario', label: 'Calendario' },
 ]
 
 export default function Nav() {
