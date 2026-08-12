@@ -7,6 +7,7 @@ const links = [
   { href: '/', label: 'Komoot' },
   { href: '/attivita', label: 'Attività' },
   { href: '/calendario', label: 'Calendario' },
+  { href: '/aggiungi', label: '+' },
 ]
 
 export default function Nav() {
