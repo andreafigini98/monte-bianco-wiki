@@ -321,3 +321,95 @@ export async function deleteKomootTour(filename: string, sha: string): Promise<{
   }
   return { ok: true }
 }
+
+// ── Attività ─────────────────────────────────────────────────────────────────
+
+const GH_ATTIVITA_DIR = 'content-monte-bianco/Attivita'
+const GH_OWNER = 'andreafigini98'
+const GH_REPO = 'monte-bianco-wiki'
+
+async function ghPut(token: string, path: string, message: string, content: string, sha?: string) {
+  const body: Record<string, string> = { message, content }
+  if (sha) body.sha = sha
+  return fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(path)}`, {
+    method: 'PUT',
+    headers: { ...GH_HEADERS(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}
+
+export type AttivitaInput = {
+  id: string        // slug usato come filename e imageUrl base
+  title: string
+  descrizione: string
+  categoria: 'visite' | 'cibo'
+  imageBase64: string  // base64 del file immagine
+  imageExt: string     // jpg | png | webp
+}
+
+export async function createAttivita(input: AttivitaInput): Promise<{ ok: true } | { ok: false; error: string }> {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return { ok: false, error: 'GITHUB_TOKEN non configurato' }
+
+  const imagePath = `next-site/public/attivita/${input.id}.${input.imageExt}`
+  const mdPath = `${GH_ATTIVITA_DIR}/${input.id}.md`
+  const imageUrl = `/attivita/${input.id}.${input.imageExt}`
+
+  // 1. Commit image
+  const imgRes = await ghPut(token, imagePath, `feat: foto attività ${input.title} via admin`, input.imageBase64)
+  if (!imgRes.ok) {
+    const err = await imgRes.json() as { message?: string }
+    return { ok: false, error: `GitHub (immagine): ${err.message ?? imgRes.status}` }
+  }
+
+  // 2. Commit markdown
+  const md = `---\nid: "${input.id}"\ntitle: "${input.title}"\ndescrizione: "${input.descrizione}"\nimageUrl: "${imageUrl}"\ncategoria: "${input.categoria}"\n---\n`
+  const mdRes = await ghPut(token, mdPath, `feat: aggiungi attività ${input.title} via admin`, Buffer.from(md).toString('base64'))
+  if (!mdRes.ok) {
+    const err = await mdRes.json() as { message?: string }
+    return { ok: false, error: `GitHub (markdown): ${err.message ?? mdRes.status}` }
+  }
+
+  return { ok: true }
+}
+
+export async function listAttivita(): Promise<{ ok: true; files: { name: string; sha: string }[] } | { ok: false; error: string }> {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return { ok: false, error: 'GITHUB_TOKEN non configurato' }
+
+  const res = await fetch(
+    `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(GH_ATTIVITA_DIR)}`,
+    { headers: GH_HEADERS(token), cache: 'no-store' },
+  )
+  if (res.status === 404) return { ok: true, files: [] }
+  if (!res.ok) return { ok: false, error: `GitHub: ${res.status}` }
+
+  const items = await res.json() as { name: string; sha: string; type: string }[]
+  const files = items
+    .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+    .map(f => ({ name: f.name.replace(/\.md$/, ''), sha: f.sha }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'it'))
+
+  return { ok: true, files }
+}
+
+export async function deleteAttivita(id: string, sha: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return { ok: false, error: 'GITHUB_TOKEN non configurato' }
+
+  // Delete markdown
+  const mdPath = `${GH_ATTIVITA_DIR}/${id}.md`
+  const res = await fetch(
+    `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(mdPath)}`,
+    {
+      method: 'DELETE',
+      headers: { ...GH_HEADERS(token), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `chore: elimina attività ${id} via admin`, sha }),
+    },
+  )
+  if (!res.ok) {
+    const err = await res.json() as { message?: string }
+    return { ok: false, error: `GitHub: ${err.message ?? res.status}` }
+  }
+  return { ok: true }
+}

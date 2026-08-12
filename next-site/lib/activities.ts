@@ -1,3 +1,7 @@
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
+
 export type Categoria = 'visite' | 'cibo'
 
 export type Attivita = {
@@ -6,6 +10,29 @@ export type Attivita = {
   descrizione: string
   imageUrl: string
   categoria: Categoria
+}
+
+const ATTIVITA_DIR = path.join(process.cwd(), '..', 'content-monte-bianco', 'Attivita')
+
+export function getAllAttivita(): Attivita[] {
+  let dynamic: Attivita[] = []
+  if (fs.existsSync(ATTIVITA_DIR)) {
+    dynamic = fs.readdirSync(ATTIVITA_DIR)
+      .filter(f => f.endsWith('.md'))
+      .map(f => {
+        const { data } = matter(fs.readFileSync(path.join(ATTIVITA_DIR, f), 'utf-8'))
+        return {
+          id: data.id ?? f.replace(/\.md$/, ''),
+          title: data.title ?? '',
+          descrizione: data.descrizione ?? '',
+          imageUrl: data.imageUrl ?? '',
+          categoria: (data.categoria ?? 'visite') as Categoria,
+        }
+      })
+  }
+  // hardcoded first, then dynamic (dedup by id)
+  const hardcodedIds = new Set(ATTIVITA.map(a => a.id))
+  return [...ATTIVITA, ...dynamic.filter(a => !hardcodedIds.has(a.id))]
 }
 
 export const ATTIVITA: Attivita[] = [
