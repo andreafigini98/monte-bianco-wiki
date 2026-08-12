@@ -1,6 +1,6 @@
 # Handoff — Sito Next.js (monte-bianco-next)
 
-Ultimo aggiornamento: 2026-08-03. Scritto per un agente che riprende questo progetto senza contesto pregresso.
+Ultimo aggiornamento: 2026-08-12. Scritto per un agente che riprende questo progetto senza contesto pregresso.
 
 ## Cos'è questo sito
 
@@ -152,6 +152,76 @@ del repo (non serve alcuna variabile d'ambiente).
 2. `git add` + `git commit` + `git push` su `main`.
 3. Vercel rileva il push e rideploya automaticamente (build ~60s).
 4. Non serve toccare `vercel.json`, non serve alcun comando Vercel CLI.
+
+## Come aggiungere gite Komoot
+
+Le gite Komoot vivono in `content-monte-bianco/Gite da Komoot/*.md` e vengono lette da `lib/komoot-hikes.ts`.
+
+**Struttura frontmatter:**
+
+```yaml
+---
+tags: [gita, komoot, <difficolta>, <zona>]   # difficolta: facile|moderato|difficile; zona: vedi ZONE_TAG_MAP
+dislivello: "910 m"
+lunghezza: "11,1 km"
+tempo: "5h37"
+difficolta: "Difficile"                        # Facile|Moderato|Difficile (usato da parseDifficulty)
+coordinate: "45.5880, 7.3416"                  # lat, lon del punto di partenza
+komoot: "https://www.komoot.com/it-it/tour/ID"
+route: "[[lat,lon],[lat,lon],...]"             # JSON array campionato (ogni 8° punto)
+imageUrl: "https://d2exd72xrrp1s7.cloudfront.net/..."
+descrizione: "Breve descrizione per card/SEO."
+waypoints:                                     # opzionale — solo se ci sono foto
+  - name: "Nome waypoint"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/..."
+---
+
+# Titolo gita
+
+![Titolo](imageUrl)
+*Foto: [Komoot](komoot-url)*
+
+## Dati tecnici
+
+| | |
+|---|---|
+| **Difficoltà** | Difficile |
+| **Dislivello positivo** | 910 m |
+| **Lunghezza** | 11,1 km |
+| **Tempo di percorrenza** | 5h37 |
+| **Coordinate partenza** | `45.5880, 7.3416` ([mappa](https://www.google.com/maps?q=45.5880,7.3416)) |
+| **Komoot** | [Apri su Komoot](komoot-url) |
+```
+
+**Come ottenere il tracciato GPS:**
+
+Komoot non espone coordinate via API senza auth, ma le embeds nell'HTML della pagina come JSON escaped nel `__KOMOOT_STATE__`. Usare `curl` (non `WebFetch`, che perde i `<script>`) + Python:
+
+```bash
+curl -s "https://www.komoot.com/it-it/tour/TOUR_ID" \
+  -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" \
+  | python3 -c "
+import sys, re, json
+html = sys.stdin.read()
+m = re.search(r'\\\\\\\\\"items\\\\\\\\\":\[(\{\\\\\\\\\"lat\\\\\\\\\".*?)\]\}', html)
+if not m:
+    m = re.search(r'\\\\\"items\\\\\":\[(\{\\\\\"lat\\\\\".*?)\]\}', html)
+if m:
+    raw = m.group(0)
+    unescaped = raw.replace('\\\\\\\\\"', '\"').replace('\\\\\"', '\"')
+    items_m = re.search(r'\[(\{\"lat\".*?)\]', unescaped)
+    if items_m:
+        items = json.loads('[' + items_m.group(1) + ']')
+        sampled = items[::8]  # campiona ogni 8° punto (~40-100 punti)
+        coords = [[round(p['lat'],5), round(p['lng'],5)] for p in sampled]
+        print(json.dumps(coords))
+"
+```
+
+La prima coordinata dell'array è il punto di partenza esatto.
+
+**Zone tag valide** (da `ZONE_TAG_MAP` in `lib/hikes.ts`):
+`gran-paradiso`, `cogne`, `monte-bianco`, `val-ferret`, `val-veny`, `courmayeur`, `la-thuile`, `cervino`, `monte-rosa`, `valpelline`
 
 ## Prossimi possibili passi
 
