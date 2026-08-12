@@ -294,7 +294,7 @@ export async function listKomootTours(): Promise<{ ok: true; files: { name: stri
 
   const items = await res.json() as { name: string; sha: string; type: string }[]
   const files = items
-    .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+    .filter(f => f.type === 'file' && f.name.endsWith('.md') && f.name !== 'index.md')
     .map(f => ({ name: f.name.replace(/\.md$/, ''), sha: f.sha }))
     .sort((a, b) => a.name.localeCompare(b.name, 'it'))
 
