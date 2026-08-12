@@ -13,6 +13,10 @@ descrizione: "Casa di Caccia di Orvieille e Pianoro di Orvieille giro ad anello 
 waypoints:
   - name: "Vista panoramica sulla Valle del Gran Paradiso"
     image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k1/1c/1crjpkj5fvoox1lec5zxbdajsq29u5unaa-uhi1407424/0?width=512&height=384&crop=true"
+  - name: "Casa di Caccia di Orvieille"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k6/15/155n3q4jwev3lubfq5bbcj1eu49sas75i-uhi53081800/0?width=512&height=384&crop=true"
+  - name: "Pianoro di Orvieille"
+    image: "https://d2exd72xrrp1s7.cloudfront.net/www/000/1k5/3x/3xr03f1r1b9t1nt71lsutsnty3w4plx52-uhi40256288/0?width=512&height=384&crop=true"
 ---
 
 # Casa di Caccia di Orvieille – Pianoro di Orvieille giro ad anello con partenza da Dégioz
