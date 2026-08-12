@@ -11,6 +11,15 @@ import HikeCard from '@/components/HikeCard'
 
 const ease = [0.22, 1, 0.36, 1] as const
 
+const DIFFICULTIES: { level: DifficultyLevel; label: string; color: string }[] = [
+  { level: 'facile',            label: 'Facile',            color: '#10b981' },
+  { level: 'media',             label: 'Media',             color: '#eab308' },
+  { level: 'impegnativa',       label: 'Impegnativa',       color: '#f97316' },
+  { level: 'molto impegnativa', label: 'Molto Impegnativa', color: '#ef4444' },
+]
+
+const DISABLED_DAYS = new Set(['2026-08-10', '2026-08-11', '2026-08-12', '2026-08-13', '2026-08-23'])
+
 const DIFF_DOT: Record<DifficultyLevel, string> = {
   'facile': 'bg-emerald-500',
   'media': 'bg-amber-500',
@@ -237,15 +246,17 @@ export default function CalendarioClient({
                 {DATES.map(({ key, day }) => {
                   const keys = schedule[key] ?? []
                   const isOver = over === key
+                  const disabled = DISABLED_DAYS.has(key)
                   return (
                     <div
                       key={key}
-                      onDragOver={e => { e.preventDefault(); setOver(key) }}
+                      onDragOver={e => { if (!disabled) { e.preventDefault(); setOver(key) } }}
                       onDragLeave={() => setOver(null)}
-                      onDrop={() => onDrop(key)}
-                      onClick={() => onDayClick(key)}
+                      onDrop={() => { if (!disabled) onDrop(key) }}
+                      onClick={() => { if (!disabled) onDayClick(key) }}
                       className={`min-h-28 rounded-lg border p-2 transition-colors duration-150 ${
-                        isOver ? 'border-stone-400 bg-stone-100'
+                        disabled ? 'border-stone-100 bg-stone-50 opacity-40 cursor-not-allowed'
+                        : isOver ? 'border-stone-400 bg-stone-100'
                         : selected ? 'border-stone-300 bg-stone-50 cursor-pointer'
                         : 'border-stone-200 bg-white'
                       }`}
@@ -336,53 +347,108 @@ export default function CalendarioClient({
           )}
         </AnimatePresence>
 
-        {/* Palette — Gite */}
+        {/* Palette */}
         {(availableHikes.length > 0 || availableAttivita.length > 0) && (
-          <div className="border-t border-stone-100 pt-12 space-y-16">
+          <div className="border-t border-stone-100 pt-2">
 
-            {availableHikes.length > 0 && (
-              <div>
-                <motion.h2 className="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-10" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, ease }}>
-                  Gite — trascina o tocca per selezionare
-                </motion.h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
-                  <AnimatePresence>
-                    {availableHikes.map(h => (
-                      <PaletteCard key={h.slug} itemKey={h.slug}>
-                        <HikeCard hike={h} />
-                      </PaletteCard>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </div>
-            )}
+            {/* Gite — sezioni per difficoltà */}
+            {DIFFICULTIES.map((diff, idx) => {
+              const hikesByDiff = availableHikes.filter(h => h.difficultyLevel === diff.level)
+              if (hikesByDiff.length === 0) return null
+              return (
+                <section key={diff.level} className="border-t border-stone-100 py-16">
+                  <div className="mb-10">
+                    <motion.span
+                      className="text-[10px] uppercase tracking-widest text-stone-300 tabular-nums block mb-4"
+                      initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.45, ease }}
+                    >
+                      {String(idx + 1).padStart(2, '0')}
+                    </motion.span>
+                    <motion.h2
+                      className="font-serif font-bold leading-none"
+                      style={{ color: diff.color, fontSize: 'clamp(3rem, 8vw, 6rem)' }}
+                      initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.7, ease, delay: 0.1 }}
+                    >
+                      {diff.label}
+                    </motion.h2>
+                    <motion.div
+                      className="h-px mt-5 origin-left" style={{ background: diff.color }}
+                      initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+                      viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.9, ease, delay: 0.25 }}
+                    />
+                    <motion.p
+                      className="text-xs uppercase tracking-widest text-stone-400 mt-3"
+                      initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.5 }}
+                    >
+                      {hikesByDiff.length} {hikesByDiff.length === 1 ? 'gita' : 'gite'} · trascina o tocca per selezionare
+                    </motion.p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+                    <AnimatePresence>
+                      {hikesByDiff.map(h => (
+                        <PaletteCard key={h.slug} itemKey={h.slug}>
+                          <HikeCard hike={h} />
+                        </PaletteCard>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </section>
+              )
+            })}
 
-            {availableAttivita.length > 0 && (
-              <div>
-                <motion.h2 className="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-10" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, ease }}>
-                  Attività — trascina o tocca per selezionare
-                </motion.h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
-                  <AnimatePresence>
-                    {availableAttivita.map(a => (
-                      <PaletteCard key={actKey(a.id)} itemKey={actKey(a.id)}>
-                        <div className="group">
-                          <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-5 rounded-lg">
-                            <Image src={a.imageUrl} alt={a.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                            <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/20 transition-colors duration-500" />
+            {/* Attività — sezioni per categoria */}
+            {(['visite', 'cibo'] as const).map(cat => {
+              const items = availableAttivita.filter(a => a.categoria === cat)
+              if (items.length === 0) return null
+              const label = cat === 'cibo' ? 'Cibo & Aperitivo' : 'Visite & Natura'
+              return (
+                <section key={cat} className="border-t border-stone-100 py-16">
+                  <div className="mb-10">
+                    <motion.h2
+                      className="font-serif font-bold leading-none text-stone-900"
+                      style={{ fontSize: 'clamp(3rem, 8vw, 6rem)' }}
+                      initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }} whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.7, ease, delay: 0.1 }}
+                    >
+                      {label}
+                    </motion.h2>
+                    <motion.div
+                      className="h-px mt-5 origin-left bg-amber-400"
+                      initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+                      viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.9, ease, delay: 0.25 }}
+                    />
+                    <motion.p
+                      className="text-xs uppercase tracking-widest text-stone-400 mt-3"
+                      initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.5 }}
+                    >
+                      {items.length} {items.length === 1 ? 'attività' : 'attività'} · trascina o tocca per selezionare
+                    </motion.p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+                    <AnimatePresence>
+                      {items.map(a => (
+                        <PaletteCard key={actKey(a.id)} itemKey={actKey(a.id)}>
+                          <div className="group">
+                            <div className="aspect-[4/3] relative overflow-hidden bg-stone-100 mb-5 rounded-lg">
+                              <Image src={a.imageUrl} alt={a.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                              <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/20 transition-colors duration-500" />
+                            </div>
+                            <div>
+                              <h3 className="font-serif text-xl font-bold leading-tight text-stone-900 mb-2 group-hover:text-stone-500 transition-colors duration-300">{a.title}</h3>
+                              <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{a.descrizione}</p>
+                            </div>
                           </div>
-                          <div>
-                            <span className="text-xs uppercase tracking-widest text-amber-500 mb-2 block">{a.categoria === 'cibo' ? 'Cibo & Aperitivo' : 'Visite & Natura'}</span>
-                            <h3 className="font-serif text-xl font-bold leading-tight text-stone-900 mb-2 group-hover:text-stone-500 transition-colors duration-300">{a.title}</h3>
-                            <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{a.descrizione}</p>
-                          </div>
-                        </div>
-                      </PaletteCard>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </div>
-            )}
+                        </PaletteCard>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </section>
+              )
+            })}
 
           </div>
         )}
