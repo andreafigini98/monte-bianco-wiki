@@ -193,9 +193,11 @@ waypoints:                                     # opzionale — solo se ci sono f
 | **Komoot** | [Apri su Komoot](komoot-url) |
 ```
 
-**Come ottenere il tracciato GPS:**
+**Come ottenere tracciato GPS, cover e waypoints:**
 
-Komoot non espone coordinate via API senza auth, ma le embeds nell'HTML della pagina come JSON escaped nel `__KOMOOT_STATE__`. Usare `curl` (non `WebFetch`, che perde i `<script>`) + Python:
+Komoot non espone dati via API senza auth, ma embeds tutto nell'HTML della pagina come JSON escaped in un tag `<script>`. Usare `curl` (non `WebFetch`, che perde i `<script>`) + Python.
+
+**Tracciato GPS** (campiona ogni 8° punto per avere ~40-100 coordinate):
 
 ```bash
 curl -s "https://www.komoot.com/it-it/tour/TOUR_ID" \
@@ -212,13 +214,79 @@ if m:
     items_m = re.search(r'\[(\{\"lat\".*?)\]', unescaped)
     if items_m:
         items = json.loads('[' + items_m.group(1) + ']')
-        sampled = items[::8]  # campiona ogni 8° punto (~40-100 punti)
+        sampled = items[::8]
         coords = [[round(p['lat'],5), round(p['lng'],5)] for p in sampled]
         print(json.dumps(coords))
 "
 ```
 
-La prima coordinata dell'array è il punto di partenza esatto.
+La prima coordinata è il punto di partenza esatto.
+
+**Cover e waypoints** — script completo (salva in `/tmp/extract_komoot.py` ed esegui):
+
+```python
+import subprocess, re
+
+def extract(tour_id):
+    result = subprocess.run(
+        ['curl', '-s', f'https://www.komoot.com/it-it/tour/{tour_id}',
+         '-H', 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'],
+        capture_output=True, text=True
+    )
+    html = result.stdout
+    scripts = re.findall(r'<script[^>]*>(.*?)</script>', html, re.DOTALL)
+    big = scripts[3]
+    u = big.replace('\\\\"', '\x00').replace('\\"', '"').replace('\x00', '\\"')
+
+    # Cover: prima immagine reale da cover_images._embedded.items
+    cover = ''
+    m = re.search(r'"cover_images":\{"_embedded":\{"items":\[(.+?)\]', u, re.DOTALL)
+    if m:
+        imgs = re.findall(r'"src":"(https://d2exd72xrrp1s7\.cloudfront\.net/[^"]+)"', m.group(1))
+        real = [i for i in imgs if 'defaultuserimage' not in i and 'uhi' in i]
+        if real:
+            cover = re.sub(r'\?.*', '?width=768&height=576&crop=true', real[0])
+
+    # Waypoints: highlight items nella timeline con immagini reali
+    waypoints = []
+    tl_start = u.find('"timeline":{"_embedded":{"items":[')
+    if tl_start >= 0:
+        i = u.find('[', tl_start + u[tl_start:].find('"items"'))
+        items_start = i + 1
+        depth = 1
+        while i < len(u) and depth > 0:
+            i += 1
+            if u[i] == '[': depth += 1
+            elif u[i] == ']': depth -= 1
+        items_content = u[items_start:i]
+
+        for m in re.finditer(r'"type":"highlight"', items_content):
+            block_start = items_content.rfind('{"index":', 0, m.start())
+            if block_start < 0: continue
+            depth2, j = 0, block_start
+            while j < len(items_content):
+                if items_content[j] == '{': depth2 += 1
+                elif items_content[j] == '}':
+                    depth2 -= 1
+                    if depth2 == 0: break
+                j += 1
+            block = items_content[block_start:j+1]
+            names = re.findall(r'"name":"([^"]+)"', block)
+            imgs = re.findall(r'"src":"(https://d2exd72xrrp1s7\.cloudfront\.net/[^"]+)"', block)
+            real_imgs = [i for i in imgs if 'defaultuserimage' not in i and 'uhi' in i]
+            if names and real_imgs:
+                img = re.sub(r'\?.*', '?width=512&height=384&crop=true', real_imgs[0])
+                if (names[0], img) not in waypoints:
+                    waypoints.append((names[0], img))
+
+    return cover, waypoints
+
+for tour_id in [123456789]:  # sostituire con gli ID reali
+    cover, waypoints = extract(tour_id)
+    print(f'COVER: {cover}')
+    for n, i in waypoints:
+        print(f'  - {n!r}: {i}')
+```
 
 **Zone tag valide** (da `ZONE_TAG_MAP` in `lib/hikes.ts`):
 `gran-paradiso`, `cogne`, `monte-bianco`, `val-ferret`, `val-veny`, `courmayeur`, `la-thuile`, `cervino`, `monte-rosa`, `valpelline`
