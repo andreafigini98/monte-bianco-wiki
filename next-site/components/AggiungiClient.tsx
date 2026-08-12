@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
-import { fetchKomootTour, publishKomootTour, type KomootData } from '@/app/actions/aggiungi-komoot'
+import { fetchKomootTour, publishKomootTour, listKomootTours, deleteKomootTour, type KomootData } from '@/app/actions/aggiungi-komoot'
 
 const ZONE_OPTIONS = [
   'gran-paradiso', 'cogne', 'monte-bianco', 'val-ferret', 'val-veny',
@@ -15,6 +15,73 @@ const DIFFICULTY_OPTIONS: Array<{ display: 'Facile' | 'Moderato' | 'Difficile'; 
 ]
 
 type Status = 'idle' | 'fetching' | 'preview' | 'publishing' | 'done' | 'error'
+
+function EliminaSection() {
+  const [files, setFiles] = useState<{ name: string; sha: string }[] | null>(null)
+  const [selected, setSelected] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState<string | null>(null)
+
+  async function load() {
+    setLoading(true)
+    setError(null)
+    const res = await listKomootTours()
+    setLoading(false)
+    if (!res.ok) { setError(res.error); return }
+    setFiles(res.files)
+    if (res.files.length) setSelected(res.files[0].name)
+  }
+
+  async function handleDelete() {
+    if (!files || !selected) return
+    const file = files.find(f => f.name === selected)
+    if (!file) return
+    if (!confirm(`Eliminare "${selected}"?`)) return
+    setDeleting(true)
+    setError(null)
+    const res = await deleteKomootTour(file.name, file.sha)
+    setDeleting(false)
+    if (!res.ok) { setError(res.error); return }
+    setDone(selected)
+    setFiles(files.filter(f => f.name !== selected))
+    setSelected(files.find(f => f.name !== selected)?.name ?? '')
+  }
+
+  return (
+    <div className="mt-16 border-t border-stone-100 pt-10">
+      <h2 className="font-serif text-2xl text-stone-900 mb-1">Elimina gita</h2>
+      <p className="text-stone-500 text-sm mb-6">Rimuove il file markdown dal repo. Vercel ridistribuisce automaticamente.</p>
+
+      {files === null ? (
+        <button onClick={load} disabled={loading}
+          className="px-5 py-2.5 border border-stone-200 rounded-lg text-sm text-stone-700 hover:border-stone-400 transition-colors disabled:opacity-40">
+          {loading ? 'Carico…' : 'Carica lista gite'}
+        </button>
+      ) : files.length === 0 ? (
+        <p className="text-stone-400 text-sm">Nessuna gita trovata.</p>
+      ) : (
+        <div className="flex gap-3 items-center flex-wrap">
+          <select
+            value={selected}
+            onChange={e => setSelected(e.target.value)}
+            className="flex-1 min-w-0 border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300"
+          >
+            {files.map(f => <option key={f.sha} value={f.name}>{f.name}</option>)}
+          </select>
+          <button onClick={handleDelete} disabled={deleting || !selected}
+            className="px-5 py-2.5 bg-red-600 text-white text-sm rounded-lg disabled:opacity-40 hover:bg-red-700 transition-colors whitespace-nowrap">
+            {deleting ? 'Elimino…' : 'Elimina'}
+          </button>
+        </div>
+      )}
+
+      {error && <p className="mt-3 text-red-700 text-sm">{error}</p>}
+      {done && <p className="mt-3 text-green-700 text-sm">"{done}" eliminata. Vercel ridistribuirà in ~60s.</p>}
+    </div>
+  )
+}
 
 export default function AggiungiClient() {
   const [url, setUrl] = useState('')
@@ -199,6 +266,8 @@ export default function AggiungiClient() {
           </div>
         </div>
       )}
+
+      <EliminaSection />
     </div>
   )
 }

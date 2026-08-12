@@ -275,3 +275,49 @@ export async function publishKomootTour(data: KomootData): Promise<PublishResult
   const result = await res.json() as { content?: { html_url?: string } }
   return { ok: true, url: result.content?.html_url ?? `https://github.com/${owner}/${repo}` }
 }
+
+const GH_DIR = 'content-monte-bianco/Gite da Komoot'
+const GH_HEADERS = (token: string) => ({
+  Authorization: `token ${token}`,
+  Accept: 'application/vnd.github+json',
+})
+
+export async function listKomootTours(): Promise<{ ok: true; files: { name: string; sha: string }[] } | { ok: false; error: string }> {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return { ok: false, error: 'GITHUB_TOKEN non configurato' }
+
+  const res = await fetch(
+    `https://api.github.com/repos/andreafigini98/monte-bianco-wiki/contents/${encodeURIComponent(GH_DIR)}`,
+    { headers: GH_HEADERS(token), cache: 'no-store' },
+  )
+  if (!res.ok) return { ok: false, error: `GitHub: ${res.status}` }
+
+  const items = await res.json() as { name: string; sha: string; type: string }[]
+  const files = items
+    .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+    .map(f => ({ name: f.name.replace(/\.md$/, ''), sha: f.sha }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'it'))
+
+  return { ok: true, files }
+}
+
+export async function deleteKomootTour(filename: string, sha: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return { ok: false, error: 'GITHUB_TOKEN non configurato' }
+
+  const filePath = `${GH_DIR}/${filename}.md`
+  const res = await fetch(
+    `https://api.github.com/repos/andreafigini98/monte-bianco-wiki/contents/${encodeURIComponent(filePath)}`,
+    {
+      method: 'DELETE',
+      headers: { ...GH_HEADERS(token), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `chore: elimina ${filename} via admin`, sha }),
+    },
+  )
+
+  if (!res.ok) {
+    const err = await res.json() as { message?: string }
+    return { ok: false, error: `GitHub: ${err.message ?? res.status}` }
+  }
+  return { ok: true }
+}
